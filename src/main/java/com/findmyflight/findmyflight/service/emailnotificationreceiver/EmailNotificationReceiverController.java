@@ -3,7 +3,6 @@ package com.findmyflight.findmyflight.service.emailnotificationreceiver;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/emailNotificationReceiver")
@@ -24,27 +23,29 @@ import java.util.List;
 public class EmailNotificationReceiverController {
     private final EmailNotificationReceiverService service;
 
-    @PostMapping("/create")
-    public ResponseEntity createEmailNotificationReceiver(@Valid @RequestBody EmailNotificationReceiverDto emailNotificationReceiverDto) {
-        service.createEmailNotificationReceiver(emailNotificationReceiverDto);
-        return ResponseEntity.ok(HttpStatus.OK);
+    @PostMapping()
+    public ResponseEntity<EmailNotificationReceiverResponse> create(@Valid @RequestBody CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest) {
+        return ResponseEntity.ok(service.create(createOrUpdateEmailNotificationReceiverRequest));
     }
 
-    @GetMapping("/get/all")
-    public ResponseEntity<List<EmailNotificationReceiver>> getAllEmailNotificationReceivers() {
-        return ResponseEntity.ok(service.getAllEmailNotificationReceivers());
+    @GetMapping()
+    public ResponseEntity<Collection<EmailNotificationReceiverResponse>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity editEmailNotificationReceiver(@PathVariable("id") Long id,
-                                                        @Valid @RequestBody EmailNotificationReceiverDto emailNotificationReceiverDto) {
-        service.editEmailNotificationReceiver(id, emailNotificationReceiverDto);
-        return ResponseEntity.ok(HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<EmailNotificationReceiverResponse> findById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(service.findById(id));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteEmailNotificationReceiver(@PathVariable("id") Long id) {
-        service.deleteEmailNotificationReceiver(id);
-        return ResponseEntity.ok(HttpStatus.OK);
+    @PutMapping("/{id}")
+    public ResponseEntity<EmailNotificationReceiverResponse> edit(@PathVariable("id") Long id,
+                                                                  @Valid @RequestBody CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest) {
+        return ResponseEntity.ok(service.edit(id, createOrUpdateEmailNotificationReceiverRequest));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> delete(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(service.delete(id));
     }
 }
