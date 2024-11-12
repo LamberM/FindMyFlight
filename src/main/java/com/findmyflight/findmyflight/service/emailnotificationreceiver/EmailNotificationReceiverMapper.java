@@ -6,12 +6,16 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
-import java.util.Optional;
+import java.util.Collection;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.WARN)
 public interface EmailNotificationReceiverMapper {
-    EmailNotificationReceiver map(EmailNotificationReceiverDto emailNotificationReceiverDto);
+    EmailNotificationReceiver map(CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest);
+
+    EmailNotificationReceiverResponse map(EmailNotificationReceiver emailNotificationReceiver);
+
+    Collection<EmailNotificationReceiverResponse> map (Collection<EmailNotificationReceiver> emailNotificationReceiverCollection);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEmailNotificationReceiverFromDto(EmailNotificationReceiverDto emailNotificationReceiverDto, @MappingTarget EmailNotificationReceiver emailNotificationReceiver);
+    void updateFromRequest(CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest, @MappingTarget EmailNotificationReceiver emailNotificationReceiver);
 }
