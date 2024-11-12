@@ -2,8 +2,8 @@ package com.findmyflight.findmyflight.service.emailnotificationreceiver;
 
 
 import com.findmyflight.findmyflight.UnitTest;
-import com.findmyflight.findmyflight.service.error.handler.AddressExistException;
-import com.findmyflight.findmyflight.service.error.handler.IdNotExistException;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -30,93 +30,101 @@ class EmailNotificationReceiverServiceTest implements UnitTest {
     EmailNotificationReceiver emailNotificationReceiverMock;
 
     @Mock
-    EmailNotificationReceiverDto emailNotificationReceiverDtoMock;
+    CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequestMock;
+
+    private final Long id = 1L;
 
     @Nested
-    class CreateEmailNotificationReceiverTest{
+    class CreateTest {
         @Test
-        void shouldCreateEmailNotificationReceiver(){
+        void shouldCreate() {
             //given
-            Mockito.when(repositoryMock.existsByAddress(emailNotificationReceiverDtoMock.address())).thenReturn(false);
-            Mockito.when(mapperMock.map(emailNotificationReceiverDtoMock)).thenReturn(emailNotificationReceiverMock);
+            Mockito.when(mapperMock.map(createOrUpdateEmailNotificationReceiverRequestMock)).thenReturn(emailNotificationReceiverMock);
             //when
-            systemUnderTest.createEmailNotificationReceiver(emailNotificationReceiverDtoMock);
+            var result = systemUnderTest.create(createOrUpdateEmailNotificationReceiverRequestMock);
             //then
-            Mockito.verify(mapperMock).map(emailNotificationReceiverDtoMock);
+            Mockito.verify(mapperMock).map(createOrUpdateEmailNotificationReceiverRequestMock);
             Mockito.verify(repositoryMock).save(emailNotificationReceiverMock);
+            Assertions.assertEquals(mapperMock.map(emailNotificationReceiverMock), result);
         }
-        @Test
-        void emailExistsShouldNotCreateEmailNotificationReceiver(){
-            //given
-            Mockito.when(repositoryMock.existsByAddress(emailNotificationReceiverDtoMock.address())).thenReturn(true);
-            //when
-            //then
-            assertThatThrownBy(()->systemUnderTest.createEmailNotificationReceiver(emailNotificationReceiverDtoMock))
-                    .isInstanceOf(AddressExistException.class)
-                    .hasMessage("Address exists");
-        }
+
     }
+
     @Nested
-    class GetAllEmailNotificationReceiversTest{
+    class FindAllTest {
         @Test
-        void shouldGetAllEmailNotificationReceivers(){
+        void shouldFindAll() {
             //given
             Mockito.when(repositoryMock.findAll()).thenReturn(new ArrayList<>());
             //when
-            systemUnderTest.getAllEmailNotificationReceivers();
+            var result = systemUnderTest.findAll();
             //then
             Mockito.verify(repositoryMock).findAll();
+            Assertions.assertEquals(mapperMock.map(repositoryMock.findAll()), result);
         }
     }
+
     @Nested
-    class EditEmailNotificationReceiverTest{
-        Long id = 1L;
+    class FindByIdTest {
         @Test
-        void shouldEditEmailNotificationReceiver(){
+        void shouldFindById() {
             //given
-            Mockito.when(repositoryMock.existsById(id)).thenReturn(true);
+            Mockito.when(repositoryMock.findById(id)).thenReturn(Optional.ofNullable(emailNotificationReceiverMock));
+            //when
+            var result = systemUnderTest.findById(id);
+            //then
+            Mockito.verify(repositoryMock).findById(id);
+            Assertions.assertEquals(mapperMock.map(emailNotificationReceiverMock), result);
+        }
+
+        @Test
+        void dbIsEmptyShouldNotFindById() {
+            //given
+            //when
+            //then
+            assertThatThrownBy(() -> systemUnderTest.findById(id))
+                    .isInstanceOf(EntityNotFoundException.class);
+        }
+    }
+
+    @Nested
+    class EditTest {
+
+        @Test
+        void shouldEdit() {
+            //given
             Mockito.when(repositoryMock.findById(id)).thenReturn(Optional.ofNullable(emailNotificationReceiverMock));
             Mockito.when(repositoryMock.save(emailNotificationReceiverMock)).thenReturn(emailNotificationReceiverMock);
             //when
-            systemUnderTest.editEmailNotificationReceiver(id,emailNotificationReceiverDtoMock);
+            var result = systemUnderTest.edit(id, createOrUpdateEmailNotificationReceiverRequestMock);
             //then
-            Mockito.verify(repositoryMock).existsById(id);
             Mockito.verify(repositoryMock).findById(id);
-            Mockito.verify(mapperMock).updateEmailNotificationReceiverFromDto(emailNotificationReceiverDtoMock,emailNotificationReceiverMock);
+            Mockito.verify(mapperMock).updateFromRequest(createOrUpdateEmailNotificationReceiverRequestMock, emailNotificationReceiverMock);
             Mockito.verify(repositoryMock).save(emailNotificationReceiverMock);
+            Assertions.assertEquals(mapperMock.map(emailNotificationReceiverMock), result);
         }
+
         @Test
-        void addressNotExistShouldNotEditEmailNotificationReceiver(){
+        void addressNotExistShouldNotEdit() {
             //given
-            Mockito.when(repositoryMock.existsById(id)).thenReturn(false);
             //when
             //then
-            assertThatThrownBy(()->systemUnderTest.editEmailNotificationReceiver(id,emailNotificationReceiverDtoMock))
-                    .isInstanceOf(IdNotExistException.class)
-                    .hasMessage("ID does not exist");
+            assertThatThrownBy(() -> systemUnderTest.edit(id, createOrUpdateEmailNotificationReceiverRequestMock))
+                    .isInstanceOf(EntityNotFoundException.class);
         }
     }
+
     @Nested
-    class DeleteEmailNotificationReceiverTest{
-        Long id = 1L;
+    class DeleteTest {
+
         @Test
-        void shouldDeleteEmailNotificationReceiver(){
+        void shouldDelete() {
             //given
-            Mockito.when(repositoryMock.existsById(id)).thenReturn(true);
             //when
-            systemUnderTest.deleteEmailNotificationReceiver(id);
+            var result = systemUnderTest.delete(id);
             //then
             Mockito.verify(repositoryMock).deleteById(id);
-        }
-        @Test
-        void idNotExistShouldNotDeleteEmailNotificationReceiver(){
-            //given
-            Mockito.when(repositoryMock.existsById(id)).thenReturn(false);
-            //when
-            //then
-            assertThatThrownBy(()->systemUnderTest.deleteEmailNotificationReceiver(id))
-                    .isInstanceOf(IdNotExistException.class)
-                    .hasMessage("ID does not exist");
+            Assertions.assertEquals(id, result);
         }
     }
 }
