@@ -1,13 +1,11 @@
 package com.findmyflight.findmyflight.service.emailnotificationreceiver;
 
-import com.findmyflight.findmyflight.service.error.handler.AddressExistException;
-import com.findmyflight.findmyflight.service.error.handler.IdNotExistException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
@@ -16,41 +14,40 @@ public class EmailNotificationReceiverService {
     private final EmailNotificationReceiverMapper mapper;
 
     @Transactional
-    public void createEmailNotificationReceiver(EmailNotificationReceiverDto emailNotificationReceiverDto) {
-        if (repository.existsByAddress(emailNotificationReceiverDto.address())) {
-            throw new AddressExistException();
-        } else {
-            var emailNotificationReceiver = mapper.map(emailNotificationReceiverDto);
-            repository.save(emailNotificationReceiver);
-        }
+    public EmailNotificationReceiverResponse create(CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest) {
+        var emailNotificationReceiver = mapper.map(createOrUpdateEmailNotificationReceiverRequest);
+        repository.save(emailNotificationReceiver);
+        return mapper.map(emailNotificationReceiver);
     }
 
     @Transactional(readOnly = true)
-    public List<EmailNotificationReceiver> getAllEmailNotificationReceivers() {
-        return repository.findAll();
+    public Collection<EmailNotificationReceiverResponse> findAll() {
+        return mapper.map(repository.findAll());
+    }
+
+    @Transactional(readOnly = true)
+    public EmailNotificationReceiverResponse findById(Long id) {
+        return mapper.map(repository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
     @Transactional
-    public void editEmailNotificationReceiver(Long id, EmailNotificationReceiverDto emailNotificationReceiverDto) {
+    public EmailNotificationReceiverResponse edit(Long id, CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest) {
         repository.findById(id)
                 .ifPresentOrElse(emailNotificationReceiver -> {
-                            mapper.updateEmailNotificationReceiverFromDto(emailNotificationReceiverDto,
-                                    emailNotificationReceiver);
+                            mapper.updateFromRequest(createOrUpdateEmailNotificationReceiverRequest, emailNotificationReceiver);
                             repository.save(emailNotificationReceiver);
                         },
                         () -> {
                             throw new EntityNotFoundException();
                         }
                 );
+        return mapper.map(repository.getReferenceById(id));
     }
 
     @Transactional
-    public void deleteEmailNotificationReceiver(Long id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
-        } else {
-            throw new IdNotExistException();
-        }
+    public Long delete(Long id) {
+        repository.deleteById(id);
+        return id;
     }
 
 }
