@@ -32,22 +32,15 @@ public class EmailNotificationReceiverService {
 
     @Transactional
     public EmailNotificationReceiverResponse edit(Long id, CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest) {
-        repository.findById(id)
-                .ifPresentOrElse(emailNotificationReceiver -> {
-                            mapper.updateFromRequest(createOrUpdateEmailNotificationReceiverRequest, emailNotificationReceiver);
-                            repository.save(emailNotificationReceiver);
-                        },
-                        () -> {
-                            throw new EntityNotFoundException();
-                        }
-                );
-        return mapper.map(repository.getReferenceById(id));
+        var emailNotificationReceiver = repository.findById(id).orElseThrow(EntityNotFoundException::new);
+        mapper.updateFromRequest(createOrUpdateEmailNotificationReceiverRequest, emailNotificationReceiver);
+        repository.save(emailNotificationReceiver);
+        return mapper.map(emailNotificationReceiver);
     }
 
     @Transactional
-    public Long delete(Long id) {
+    public void delete(Long id) {
         repository.deleteById(id);
-        return id;
     }
 
 }
