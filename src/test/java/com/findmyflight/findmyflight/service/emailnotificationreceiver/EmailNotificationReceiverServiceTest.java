@@ -121,10 +121,9 @@ class EmailNotificationReceiverServiceTest implements UnitTest {
         void shouldDelete() {
             //given
             //when
-            var result = systemUnderTest.delete(id);
+            systemUnderTest.delete(id);
             //then
             Mockito.verify(repositoryMock).deleteById(id);
-            Assertions.assertEquals(id, result);
         }
     }
 }
