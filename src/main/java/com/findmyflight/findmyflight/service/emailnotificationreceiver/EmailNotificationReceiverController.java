@@ -45,7 +45,8 @@ public class EmailNotificationReceiverController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> delete(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(service.delete(id));
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        service.delete(id);
+        return ResponseEntity.ok().build();
     }
 }
