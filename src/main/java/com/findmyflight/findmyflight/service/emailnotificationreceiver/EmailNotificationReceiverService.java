@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,11 @@ public class EmailNotificationReceiverService {
     @Transactional(readOnly = true)
     public EmailNotificationReceiverResponse findById(Long id) {
         return emailNotificationReceiverMapper.map(emailNotificationReceiverRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<EmailNotificationReceiver> findEntityById(Long id) {
+        return emailNotificationReceiverRepository.findById(id);
     }
 
     @Transactional

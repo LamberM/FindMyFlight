@@ -17,7 +17,7 @@ public class EmailNotificationReceiverCreator {
 
     @Transactional
     public EmailNotificationReceiver createSample() {
-        EmailNotificationReceiver emailNotificationReceiver = EmailNotificationReceiver.builder().address(generateEmail()).build();
+        var emailNotificationReceiver = EmailNotificationReceiver.builder().address(generateEmail()).build();
         return emailNotificationReceiverRepository.save(emailNotificationReceiver);
     }
 

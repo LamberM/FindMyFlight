@@ -1,25 +1,16 @@
 package com.findmyflight.findmyflight.service.emailnotificationreceiver;
 
 import com.findmyflight.findmyflight.IntegrationTest;
-import com.findmyflight.findmyflight.samplecreator.EmailNotificationReceiverCreator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
-class EmailNotificationReceiverControllerTest implements IntegrationTest {
-
-    @Autowired
-    WebTestClient webTestClient;
-
-    @Autowired
-    EmailNotificationReceiverCreator creator;
+class EmailNotificationReceiverControllerTest extends IntegrationTest {
 
     @AfterEach
     void cleanUp() {
-        creator.deleteAll();
+        emailNotificationReceiverCreator.deleteAll();
     }
 
     private CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest(String address) {
@@ -31,7 +22,7 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void shouldCreate() {
             //given
-            CreateOrUpdateEmailNotificationReceiverRequest request = createOrUpdateEmailNotificationReceiverRequest("test@gmail.com");
+            var request = createOrUpdateEmailNotificationReceiverRequest("test@gmail.com");
             //when
             //then
             webTestClient.post()
@@ -47,7 +38,7 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void addressIsWrongShouldNotCreate() {
             //given
-            CreateOrUpdateEmailNotificationReceiverRequest request = createOrUpdateEmailNotificationReceiverRequest("tests.com");
+            var request = createOrUpdateEmailNotificationReceiverRequest("tests.com");
             //when
             //then
             webTestClient.post()
@@ -64,7 +55,7 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void shouldFindAll() {
             //given
-            EmailNotificationReceiver sample = creator.createSample();
+            var sample = emailNotificationReceiverCreator.createSample();
             //when
             //then
             webTestClient.get()
@@ -96,7 +87,7 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void shouldFindById() {
             //given
-            EmailNotificationReceiver sample = creator.createSample();
+            var sample = emailNotificationReceiverCreator.createSample();
             //when
             //then
             webTestClient.get()
@@ -113,7 +104,7 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void shouldEdit() {
             //given
-            EmailNotificationReceiver sample = creator.createSample();
+            var sample = emailNotificationReceiverCreator.createSample();
             //when
             //then
             webTestClient.put()
@@ -132,7 +123,7 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void shouldDelete() {
             //given
-            EmailNotificationReceiver sample = creator.createSample();
+            var sample = emailNotificationReceiverCreator.createSample();
             //when
             //then
             webTestClient.delete()
