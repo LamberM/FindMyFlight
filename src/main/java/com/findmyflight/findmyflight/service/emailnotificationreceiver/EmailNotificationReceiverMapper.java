@@ -8,13 +8,13 @@ import org.mapstruct.ReportingPolicy;
 
 import java.util.Collection;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.WARN)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface EmailNotificationReceiverMapper {
     EmailNotificationReceiver map(CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest);
 
     EmailNotificationReceiverResponse map(EmailNotificationReceiver emailNotificationReceiver);
 
-    Collection<EmailNotificationReceiverResponse> map (Collection<EmailNotificationReceiver> emailNotificationReceiverCollection);
+    Collection<EmailNotificationReceiverResponse> map(Collection<EmailNotificationReceiver> emailNotificationReceiverCollection);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateFromRequest(CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest, @MappingTarget EmailNotificationReceiver emailNotificationReceiver);

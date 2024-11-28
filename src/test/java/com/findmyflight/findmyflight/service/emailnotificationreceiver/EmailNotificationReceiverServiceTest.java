@@ -17,22 +17,17 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class EmailNotificationReceiverServiceTest implements UnitTest {
 
+    private static final Long SAMPLE_ID = 1L;
     @InjectMocks
-    EmailNotificationReceiverService systemUnderTest;
-
+    private EmailNotificationReceiverService systemUnderTest;
     @Mock
-    EmailNotificationReceiverRepository repositoryMock;
-
+    private EmailNotificationReceiverRepository repositoryMock;
     @Mock
-    EmailNotificationReceiverMapper mapperMock;
-
+    private EmailNotificationReceiverMapper mapperMock;
     @Mock
-    EmailNotificationReceiver emailNotificationReceiverMock;
-
+    private EmailNotificationReceiver emailNotificationReceiverMock;
     @Mock
-    CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequestMock;
-
-    private final Long id = 1L;
+    private CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequestMock;
 
     @Nested
     class CreateTest {
@@ -69,11 +64,11 @@ class EmailNotificationReceiverServiceTest implements UnitTest {
         @Test
         void shouldFindById() {
             //given
-            Mockito.when(repositoryMock.findById(id)).thenReturn(Optional.ofNullable(emailNotificationReceiverMock));
+            Mockito.when(repositoryMock.findById(SAMPLE_ID)).thenReturn(Optional.ofNullable(emailNotificationReceiverMock));
             //when
-            var result = systemUnderTest.findById(id);
+            var result = systemUnderTest.findById(SAMPLE_ID);
             //then
-            Mockito.verify(repositoryMock).findById(id);
+            Mockito.verify(repositoryMock).findById(SAMPLE_ID);
             Assertions.assertEquals(mapperMock.map(emailNotificationReceiverMock), result);
         }
 
@@ -82,7 +77,7 @@ class EmailNotificationReceiverServiceTest implements UnitTest {
             //given
             //when
             //then
-            assertThatThrownBy(() -> systemUnderTest.findById(id))
+            assertThatThrownBy(() -> systemUnderTest.findById(SAMPLE_ID))
                     .isInstanceOf(EntityNotFoundException.class);
         }
     }
@@ -93,12 +88,12 @@ class EmailNotificationReceiverServiceTest implements UnitTest {
         @Test
         void shouldEdit() {
             //given
-            Mockito.when(repositoryMock.findById(id)).thenReturn(Optional.ofNullable(emailNotificationReceiverMock));
+            Mockito.when(repositoryMock.findById(SAMPLE_ID)).thenReturn(Optional.ofNullable(emailNotificationReceiverMock));
             Mockito.when(repositoryMock.save(emailNotificationReceiverMock)).thenReturn(emailNotificationReceiverMock);
             //when
-            var result = systemUnderTest.edit(id, createOrUpdateEmailNotificationReceiverRequestMock);
+            var result = systemUnderTest.update(SAMPLE_ID, createOrUpdateEmailNotificationReceiverRequestMock);
             //then
-            Mockito.verify(repositoryMock).findById(id);
+            Mockito.verify(repositoryMock).findById(SAMPLE_ID);
             Mockito.verify(mapperMock).updateFromRequest(createOrUpdateEmailNotificationReceiverRequestMock, emailNotificationReceiverMock);
             Mockito.verify(repositoryMock).save(emailNotificationReceiverMock);
             Assertions.assertEquals(mapperMock.map(emailNotificationReceiverMock), result);
@@ -109,7 +104,7 @@ class EmailNotificationReceiverServiceTest implements UnitTest {
             //given
             //when
             //then
-            assertThatThrownBy(() -> systemUnderTest.edit(id, createOrUpdateEmailNotificationReceiverRequestMock))
+            assertThatThrownBy(() -> systemUnderTest.update(SAMPLE_ID, createOrUpdateEmailNotificationReceiverRequestMock))
                     .isInstanceOf(EntityNotFoundException.class);
         }
     }
@@ -121,9 +116,9 @@ class EmailNotificationReceiverServiceTest implements UnitTest {
         void shouldDelete() {
             //given
             //when
-            systemUnderTest.delete(id);
+            systemUnderTest.delete(SAMPLE_ID);
             //then
-            Mockito.verify(repositoryMock).deleteById(id);
+            Mockito.verify(repositoryMock).deleteById(SAMPLE_ID);
         }
     }
 }

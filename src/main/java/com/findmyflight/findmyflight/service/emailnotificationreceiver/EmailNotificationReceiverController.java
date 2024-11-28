@@ -17,36 +17,36 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/emailNotificationReceiver")
+@RequestMapping("/email-notification-receiver")
 @Validated
 @RequiredArgsConstructor
 public class EmailNotificationReceiverController {
-    private final EmailNotificationReceiverService service;
-
-    @PostMapping()
-    public ResponseEntity<EmailNotificationReceiverResponse> create(@Valid @RequestBody CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest) {
-        return ResponseEntity.ok(service.create(createOrUpdateEmailNotificationReceiverRequest));
-    }
+    private final EmailNotificationReceiverService emailNotificationReceiverService;
 
     @GetMapping()
     public ResponseEntity<Collection<EmailNotificationReceiverResponse>> findAll() {
-        return ResponseEntity.ok(service.findAll());
+        return ResponseEntity.ok(emailNotificationReceiverService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EmailNotificationReceiverResponse> findById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(service.findById(id));
+        return ResponseEntity.ok(emailNotificationReceiverService.findById(id));
+    }
+
+    @PostMapping()
+    public ResponseEntity<EmailNotificationReceiverResponse> create(@Valid @RequestBody CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest) {
+        return ResponseEntity.ok(emailNotificationReceiverService.create(createOrUpdateEmailNotificationReceiverRequest));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmailNotificationReceiverResponse> edit(@PathVariable("id") Long id,
-                                                                  @Valid @RequestBody CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest) {
-        return ResponseEntity.ok(service.edit(id, createOrUpdateEmailNotificationReceiverRequest));
+    public ResponseEntity<EmailNotificationReceiverResponse> update(@PathVariable("id") Long id,
+                                                                    @Valid @RequestBody CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest) {
+        return ResponseEntity.ok(emailNotificationReceiverService.update(id, createOrUpdateEmailNotificationReceiverRequest));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        service.delete(id);
+        emailNotificationReceiverService.delete(id);
         return ResponseEntity.ok().build();
     }
 }

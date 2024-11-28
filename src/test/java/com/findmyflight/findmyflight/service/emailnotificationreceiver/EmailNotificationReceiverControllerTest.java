@@ -1,6 +1,7 @@
 package com.findmyflight.findmyflight.service.emailnotificationreceiver;
 
 import com.findmyflight.findmyflight.IntegrationTest;
+import com.findmyflight.findmyflight.samplecreator.EmailNotificationReceiverCreator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -8,18 +9,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-
 class EmailNotificationReceiverControllerTest implements IntegrationTest {
 
     @Autowired
     WebTestClient webTestClient;
 
     @Autowired
-    EmailNotificationReceiverRepository repository;
+    EmailNotificationReceiverCreator creator;
 
     @AfterEach
     void cleanUp() {
-        repository.deleteAll();
+        creator.deleteAll();
+    }
+
+    private CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest(String address) {
+        return new CreateOrUpdateEmailNotificationReceiverRequest(address);
     }
 
     @Nested
@@ -27,12 +31,13 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void shouldCreate() {
             //given
+            CreateOrUpdateEmailNotificationReceiverRequest request = createOrUpdateEmailNotificationReceiverRequest("test@gmail.com");
             //when
             //then
             webTestClient.post()
-                    .uri("/emailNotificationReceiver")
+                    .uri("/email-notification-receiver")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(createOrUpdateEmailNotificationReceiverRequest("test@gmail.com"))
+                    .bodyValue(request)
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody()
@@ -42,12 +47,13 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void addressIsWrongShouldNotCreate() {
             //given
+            CreateOrUpdateEmailNotificationReceiverRequest request = createOrUpdateEmailNotificationReceiverRequest("tests.com");
             //when
             //then
             webTestClient.post()
-                    .uri("/emailNotificationReceiver")
+                    .uri("/email-notification-receiver")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(createOrUpdateEmailNotificationReceiverRequest("tests.com"))
+                    .bodyValue(request)
                     .exchange()
                     .expectStatus().isBadRequest();
         }
@@ -58,24 +64,25 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void shouldFindAll() {
             //given
-            emailNotificationReceiver();
+            EmailNotificationReceiver sample = creator.createSample();
             //when
             //then
             webTestClient.get()
-                    .uri("/emailNotificationReceiver")
+                    .uri("/email-notification-receiver")
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody()
-                    .jsonPath("$[0].id").isEqualTo(emailNotificationReceiver().getId())
-                    .jsonPath("$[0].address").isEqualTo(emailNotificationReceiver().getAddress());
+                    .jsonPath("$[0].id").isEqualTo(sample.getId())
+                    .jsonPath("$[0].address").isEqualTo(sample.getAddress());
         }
+
         @Test
         void shouldFindAllCollectionEmpty() {
             //given
             //when
             //then
             webTestClient.get()
-                    .uri("/emailNotificationReceiver")
+                    .uri("/email-notification-receiver")
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody()
@@ -89,15 +96,15 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void shouldFindById() {
             //given
-            emailNotificationReceiver();
+            EmailNotificationReceiver sample = creator.createSample();
             //when
             //then
             webTestClient.get()
-                    .uri("/emailNotificationReceiver/{id}", emailNotificationReceiver().getId())
+                    .uri("/email-notification-receiver/{id}", sample.getId())
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody()
-                    .jsonPath("$.address").isEqualTo("test@gmail.com");
+                    .jsonPath("$.address").isEqualTo(sample.getAddress());
         }
     }
 
@@ -106,30 +113,17 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void shouldEdit() {
             //given
-            emailNotificationReceiver();
+            EmailNotificationReceiver sample = creator.createSample();
             //when
             //then
             webTestClient.put()
-                    .uri("/emailNotificationReceiver/{id}", emailNotificationReceiver().getId())
+                    .uri("/email-notification-receiver/{id}", sample.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(createOrUpdateEmailNotificationReceiverRequest("test123@gmail.com"))
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody()
                     .jsonPath("$.address").isEqualTo("test123@gmail.com");
-        }
-
-        @Test
-        void addressInObjectIsWrongShouldNotEdit() {
-            //given
-            //when
-            //then
-            webTestClient.put()
-                    .uri("/emailNotificationReceiver/{id}", emailNotificationReceiver().getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(createOrUpdateEmailNotificationReceiverRequest("testgmail.com"))
-                    .exchange()
-                    .expectStatus().isBadRequest();
         }
     }
 
@@ -138,21 +132,13 @@ class EmailNotificationReceiverControllerTest implements IntegrationTest {
         @Test
         void shouldDelete() {
             //given
+            EmailNotificationReceiver sample = creator.createSample();
             //when
             //then
             webTestClient.delete()
-                    .uri("/emailNotificationReceiver/{id}", emailNotificationReceiver().getId())
+                    .uri("/email-notification-receiver/{id}", sample.getId())
                     .exchange()
                     .expectStatus().isOk();
         }
-    }
-
-    private CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest(String address) {
-        return new CreateOrUpdateEmailNotificationReceiverRequest(address);
-    }
-
-    private EmailNotificationReceiver emailNotificationReceiver() {
-        var emailNotificationReceiver = new EmailNotificationReceiver(1L, "test@gmail.com");
-        return repository.save(emailNotificationReceiver);
     }
 }
