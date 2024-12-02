@@ -6,41 +6,46 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class EmailNotificationReceiverService {
-    private final EmailNotificationReceiverRepository repository;
-    private final EmailNotificationReceiverMapper mapper;
+    private final EmailNotificationReceiverRepository emailNotificationReceiverRepository;
+    private final EmailNotificationReceiverMapper emailNotificationReceiverMapper;
 
     @Transactional
-    public EmailNotificationReceiverResponse create(CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest) {
-        var emailNotificationReceiver = mapper.map(createOrUpdateEmailNotificationReceiverRequest);
-        repository.save(emailNotificationReceiver);
-        return mapper.map(emailNotificationReceiver);
+    public EmailNotificationReceiverResponse create(CreateOrUpdateEmailNotificationReceiverRequest request) {
+        var emailNotificationReceiver = emailNotificationReceiverMapper.map(request);
+        emailNotificationReceiverRepository.save(emailNotificationReceiver);
+        return emailNotificationReceiverMapper.map(emailNotificationReceiver);
     }
 
     @Transactional(readOnly = true)
     public Collection<EmailNotificationReceiverResponse> findAll() {
-        return mapper.map(repository.findAll());
+        return emailNotificationReceiverMapper.map(emailNotificationReceiverRepository.findAll());
     }
 
     @Transactional(readOnly = true)
     public EmailNotificationReceiverResponse findById(Long id) {
-        return mapper.map(repository.findById(id).orElseThrow(EntityNotFoundException::new));
+        return emailNotificationReceiverMapper.map(emailNotificationReceiverRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<EmailNotificationReceiver> findEntityById(Long id) {
+        return emailNotificationReceiverRepository.findById(id);
     }
 
     @Transactional
-    public EmailNotificationReceiverResponse edit(Long id, CreateOrUpdateEmailNotificationReceiverRequest createOrUpdateEmailNotificationReceiverRequest) {
-        var emailNotificationReceiver = repository.findById(id).orElseThrow(EntityNotFoundException::new);
-        mapper.updateFromRequest(createOrUpdateEmailNotificationReceiverRequest, emailNotificationReceiver);
-        repository.save(emailNotificationReceiver);
-        return mapper.map(emailNotificationReceiver);
+    public EmailNotificationReceiverResponse update(Long id, CreateOrUpdateEmailNotificationReceiverRequest request) {
+        var emailNotificationReceiver = emailNotificationReceiverRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        emailNotificationReceiverMapper.updateFromRequest(request, emailNotificationReceiver);
+        emailNotificationReceiverRepository.save(emailNotificationReceiver);
+        return emailNotificationReceiverMapper.map(emailNotificationReceiver);
     }
 
     @Transactional
     public void delete(Long id) {
-        repository.deleteById(id);
+        emailNotificationReceiverRepository.deleteById(id);
     }
-
 }
