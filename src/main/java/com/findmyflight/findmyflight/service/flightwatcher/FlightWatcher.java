@@ -2,6 +2,7 @@ package com.findmyflight.findmyflight.service.flightwatcher;
 
 import com.findmyflight.findmyflight.service.emailnotificationreceiver.EmailNotificationReceiver;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class FlightWatcher {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,6 +44,6 @@ public class FlightWatcher {
     @NotNull
     private Boolean suspended;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private EmailNotificationReceiver emailNotificationReceiver;
 }
