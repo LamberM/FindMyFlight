@@ -29,9 +29,9 @@ class FlightWatcherControllerTest extends IntegrationTest {
         @Test
         void givenFlightWatchers_thenReturnAll() {
             // given
-            var sample1 = flightWatcherCreator.createSampleWithSuspendedFalse();
-            var sample2 = flightWatcherCreator.createSampleWithSuspendedFalse();
-            var sample3 = flightWatcherCreator.createSampleWithSuspendedFalse();
+            var sample1 = flightWatcherCreator.createSample(false);
+            var sample2 = flightWatcherCreator.createSample(false);
+            var sample3 = flightWatcherCreator.createSample(false);
             // when
             // then
             var response = webTestClient.get()
@@ -57,7 +57,7 @@ class FlightWatcherControllerTest extends IntegrationTest {
         @Test
         void givenFlightWatcher_thenReturn() {
             // given
-            var sample = flightWatcherCreator.createSampleWithSuspendedFalse();
+            var sample = flightWatcherCreator.createSample(false);
             // when
             // then
             webTestClient.get()
@@ -124,7 +124,7 @@ class FlightWatcherControllerTest extends IntegrationTest {
         @Test
         void givenValidRequestAndEntityExists_thenUpdate() {
             //given
-            var sample = flightWatcherCreator.createSampleWithSuspendedFalse();
+            var sample = flightWatcherCreator.createSample(false);
             var request = CreateOrUpdateFlightWatcherRequest.builder()
                     .fromCity(sample.getFromCity())
                     .toCity(sample.getToCity())
@@ -160,7 +160,7 @@ class FlightWatcherControllerTest extends IntegrationTest {
         @Test
         void givenEntityExists_thenDelete() {
             //given
-            var sample = flightWatcherCreator.createSampleWithSuspendedFalse();
+            var sample = flightWatcherCreator.createSample(false);
             //when
             //then
             webTestClient.delete()
@@ -181,7 +181,7 @@ class FlightWatcherControllerTest extends IntegrationTest {
         void givenWatcherResumed_whenSuspend_thenSuspendWatcher() {
             //given
             var resumedWatcher = transactionHelper.runInTransactionAndReturn(entityManager -> {
-                var sample = flightWatcherCreator.createSampleWithSuspendedFalse();
+                var sample = flightWatcherCreator.createSample(false);
                 sample.setSuspended(Boolean.FALSE);
                 return sample;
             });
@@ -204,7 +204,7 @@ class FlightWatcherControllerTest extends IntegrationTest {
         void givenWatcherSuspended_whenResume_thenResumeWatcher() {
             //given
             var suspendedWatcher = transactionHelper.runInTransactionAndReturn(entityManager -> {
-                var sample = flightWatcherCreator.createSampleWithSuspendedFalse();
+                var sample = flightWatcherCreator.createSample(false);
                 sample.setSuspended(Boolean.TRUE);
                 return sample;
             });
