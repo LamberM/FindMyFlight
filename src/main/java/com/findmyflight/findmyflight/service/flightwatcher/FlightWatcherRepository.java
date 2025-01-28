@@ -4,8 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
-
 public interface FlightWatcherRepository extends JpaRepository<FlightWatcher, Long> {
     @Modifying
     @Query("update FlightWatcher fw set fw.suspended = true where fw.id = ?1")
@@ -14,7 +12,4 @@ public interface FlightWatcherRepository extends JpaRepository<FlightWatcher, Lo
     @Modifying
     @Query("update FlightWatcher fw set fw.suspended = false where fw.id = ?1")
     void resume(Long id);
-
-    @Query("select fw from FlightWatcher fw where fw.suspended = false")
-    List<FlightWatcher> findSuspendedFlightWatchers();
 }
