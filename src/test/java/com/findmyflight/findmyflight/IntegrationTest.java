@@ -3,18 +3,18 @@ package com.findmyflight.findmyflight;
 import com.findmyflight.findmyflight.samplecreator.EmailNotificationReceiverCreator;
 import com.findmyflight.findmyflight.samplecreator.FlightWatcherCreator;
 import com.findmyflight.findmyflight.utils.TransactionHelper;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public abstract class IntegrationTest {
 
     @Autowired
