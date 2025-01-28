@@ -20,6 +20,11 @@ public class EmailNotificationReceiverCreator {
         var emailNotificationReceiver = EmailNotificationReceiver.builder().address(generateEmail()).build();
         return emailNotificationReceiverRepository.save(emailNotificationReceiver);
     }
+    @Transactional
+    public EmailNotificationReceiver createSampleWithSameMail() {
+        var emailNotificationReceiver = EmailNotificationReceiver.builder().address("test@test.com").build();
+        return emailNotificationReceiverRepository.save(emailNotificationReceiver);
+    }
 
     @Transactional
     public void deleteAll() {
