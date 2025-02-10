@@ -18,7 +18,7 @@ public class EmailNotificationSenderService {
     private final EmailNotificationReceiverRepository emailNotificationReceiverRepository;
     private final SpringTemplateEngine springTemplateEngine;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "{email.notification.sender.cron}")
     public void sendMailToSubscribers() throws MessagingException {
         var context = new Context();
         var emailNotificationReceivers = emailNotificationReceiverRepository.findEmailNotificationReceiversWithActiveFlightWatchers();

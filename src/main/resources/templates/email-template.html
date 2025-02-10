@@ -13,15 +13,17 @@
         <th>FROM</th>
         <th>TO</th>
         <th>Suspended</th>
+        <th>COST</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="flightwacher : ${flightWatchers}">
-        <td th:text="${flightwacher.fromCity}"></td>
-        <td th:text="${flightwacher.toCity}"></td>
-        <td th:text="${flightwacher.fromDate}"></td>
-        <td th:text="${flightwacher.toDate}"></td>
-        <td th:text="${flightwacher.suspended}"></td>
+    <tr th:each="flightWatcher : ${flightWatchers}">
+        <td th:text="${flightWatcher.fromCity}"></td>
+        <td th:text="${flightWatcher.toCity}"></td>
+        <td th:text="${flightWatcher.fromDate}"></td>
+        <td th:text="${flightWatcher.toDate}"></td>
+        <td th:text="${flightWatcher.suspended}"></td>
+        <td th:text="${flightWatcher.flightResult.result}"></td>
     </tr>
     </tbody>
 </table>

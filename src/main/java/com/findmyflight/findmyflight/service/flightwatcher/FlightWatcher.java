@@ -1,12 +1,14 @@
 package com.findmyflight.findmyflight.service.flightwatcher;
 
 import com.findmyflight.findmyflight.service.emailnotificationreceiver.EmailNotificationReceiver;
+import com.findmyflight.findmyflight.service.flightresult.FlightResult;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotBlank;
@@ -46,4 +48,7 @@ public class FlightWatcher {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private EmailNotificationReceiver emailNotificationReceiver;
+
+    @OneToOne(mappedBy = "flightWatcher",fetch = FetchType.LAZY)
+    private FlightResult flightResult;
 }

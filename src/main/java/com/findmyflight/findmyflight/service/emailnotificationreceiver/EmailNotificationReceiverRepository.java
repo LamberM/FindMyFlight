@@ -6,9 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface EmailNotificationReceiverRepository extends JpaRepository<EmailNotificationReceiver, Long> {
-    @Query("select e from EmailNotificationReceiver e join fetch e.flightWatchers fw where fw.suspended = false")
+    @Query("select e from EmailNotificationReceiver e join fetch e.flightWatchers fw where fw.suspended = false and fw.flightResult is not null")
     List<EmailNotificationReceiver> findEmailNotificationReceiversWithActiveFlightWatchers();
-
-    @Query("select e from EmailNotificationReceiver e  where e.address = ?1")
-    EmailNotificationReceiver findEmailNotificationReceiverByAddress(String address);
 }
