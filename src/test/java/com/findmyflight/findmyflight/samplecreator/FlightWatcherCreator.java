@@ -15,18 +15,29 @@ public class FlightWatcherCreator {
     private final EmailNotificationReceiverCreator emailNotificationReceiverCreator;
 
     @Transactional
-    public FlightWatcher createSample() {
+    public FlightWatcher createSample(boolean suspended) {
         var flightWatcher = FlightWatcher.builder()
                 .fromCity("gdansk")
                 .toCity("rome")
                 .fromDate(LocalDate.now())
                 .toDate(LocalDate.now().plusDays(1))
-                .suspended(Boolean.FALSE)
+                .suspended(suspended)
                 .emailNotificationReceiver(emailNotificationReceiverCreator.createSample())
                 .build();
         return flightWatcherRepository.save(flightWatcher);
     }
-
+    @Transactional
+    public FlightWatcher createSample(boolean suspended,LocalDate from) {
+        var flightWatcher = FlightWatcher.builder()
+                .fromCity("gdansk")
+                .toCity("rome")
+                .fromDate(from)
+                .toDate(from.plusDays(1))
+                .suspended(suspended)
+                .emailNotificationReceiver(emailNotificationReceiverCreator.createSample())
+                .build();
+        return flightWatcherRepository.save(flightWatcher);
+    }
     public void deleteAll() {
         flightWatcherRepository.deleteAll();
     }

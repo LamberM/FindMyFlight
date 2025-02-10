@@ -1,7 +1,9 @@
 package com.findmyflight.findmyflight;
 
 import com.findmyflight.findmyflight.samplecreator.EmailNotificationReceiverCreator;
+import com.findmyflight.findmyflight.samplecreator.FlightResultCreator;
 import com.findmyflight.findmyflight.samplecreator.FlightWatcherCreator;
+import com.findmyflight.findmyflight.utils.TextConverter;
 import com.findmyflight.findmyflight.utils.TransactionHelper;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +23,13 @@ public abstract class IntegrationTest {
     protected WebTestClient webTestClient;
     @Autowired
     protected TransactionHelper transactionHelper;
+    @Autowired
+    protected TextConverter textConverter;
 
     @Autowired
     protected FlightWatcherCreator flightWatcherCreator;
     @Autowired
     protected EmailNotificationReceiverCreator emailNotificationReceiverCreator;
+    @Autowired
+    protected FlightResultCreator flightResultCreator;
 }
