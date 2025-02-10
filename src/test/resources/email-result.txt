@@ -13,22 +13,17 @@
         <th>FROM</th>
         <th>TO</th>
         <th>Suspended</th>
+        <th>COST</th>
     </tr>
     </thead>
     <tbody>
     <tr>
         <td>gdansk</td>
         <td>rome</td>
-        <td>2025-01-28</td>
-        <td>2025-01-29</td>
+        <td>2025-01-01</td>
+        <td>2025-01-02</td>
         <td>false</td>
-    </tr>
-    <tr>
-        <td>gdansk</td>
-        <td>rome</td>
-        <td>2025-01-28</td>
-        <td>2025-01-29</td>
-        <td>false</td>
+        <td>1000</td>
     </tr>
     </tbody>
 </table>
@@ -39,3 +34,4 @@
     <br>SkyDealHunter
 </h4>
 </body>
+</html>

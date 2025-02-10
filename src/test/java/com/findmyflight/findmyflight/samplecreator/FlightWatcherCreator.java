@@ -1,6 +1,5 @@
 package com.findmyflight.findmyflight.samplecreator;
 
-import com.findmyflight.findmyflight.service.emailnotificationreceiver.EmailNotificationReceiverRepository;
 import com.findmyflight.findmyflight.service.flightwatcher.FlightWatcher;
 import com.findmyflight.findmyflight.service.flightwatcher.FlightWatcherRepository;
 import jakarta.transaction.Transactional;
@@ -14,7 +13,6 @@ import java.time.LocalDate;
 public class FlightWatcherCreator {
     private final FlightWatcherRepository flightWatcherRepository;
     private final EmailNotificationReceiverCreator emailNotificationReceiverCreator;
-    private final EmailNotificationReceiverRepository emailNotificationReceiverRepository;
 
     @Transactional
     public FlightWatcher createSample(boolean suspended) {
@@ -29,14 +27,14 @@ public class FlightWatcherCreator {
         return flightWatcherRepository.save(flightWatcher);
     }
     @Transactional
-    public FlightWatcher createSampleWithSameMail(boolean suspended) {
+    public FlightWatcher createSample(boolean suspended,LocalDate from) {
         var flightWatcher = FlightWatcher.builder()
                 .fromCity("gdansk")
                 .toCity("rome")
-                .fromDate(LocalDate.now())
-                .toDate(LocalDate.now().plusDays(1))
+                .fromDate(from)
+                .toDate(from.plusDays(1))
                 .suspended(suspended)
-                .emailNotificationReceiver(emailNotificationReceiverRepository.findEmailNotificationReceiverByAddress("test@test.com"))
+                .emailNotificationReceiver(emailNotificationReceiverCreator.createSample())
                 .build();
         return flightWatcherRepository.save(flightWatcher);
     }

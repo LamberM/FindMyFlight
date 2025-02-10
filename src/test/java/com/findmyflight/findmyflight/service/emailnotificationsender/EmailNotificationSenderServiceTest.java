@@ -1,6 +1,7 @@
 package com.findmyflight.findmyflight.service.emailnotificationsender;
 
 import com.findmyflight.findmyflight.IntegrationTest;
+import com.findmyflight.findmyflight.service.flightwatcher.FlightWatcher;
 import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
@@ -13,20 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.util.FileCopyUtils;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import java.util.List;
 
 class EmailNotificationSenderServiceTest extends IntegrationTest {
     @Autowired
@@ -50,6 +44,7 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
 
     @AfterEach
     void cleanUp() {
+        flightResultCreator.deleteAll();
         flightWatcherCreator.deleteAll();
         emailNotificationReceiverCreator.deleteAll();
     }
@@ -57,43 +52,97 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
     @Nested
     class SendMailToSubscribersTest {
         @Test
-        void givenFlightWatchers_thenReturnMail() throws MessagingException {
+        void givenNothing_whenSendMailToSubscribers_thenReturnEmptyEmailList() throws MessagingException {
             //given
-            emailNotificationReceiverCreator.createSampleWithSameMail();
-            flightWatcherCreator.createSampleWithSameMail(false);
-            flightWatcherCreator.createSampleWithSameMail(false);
-            flightWatcherCreator.createSampleWithSameMail(true);
-            flightWatcherCreator.createSample(true);
-            flightWatcherCreator.createSample(true);
-            flightWatcherCreator.createSample(false);
             //when
             systemUnderTest.sendMailToSubscribers();
             var messages = greenMail.getReceivedMessages();
-            var firstMessageResult = convertEmail(GreenMailUtil.getBody(messages[0]));
-            var secondMessageResult = convertEmail(GreenMailUtil.getBody(messages[1]));
             //then
-            Assertions.assertEquals(2, Arrays.stream(messages).toList().size());
+            Assertions.assertEquals(0, Arrays.stream(messages).toList().size());
+        }
+
+        @Test
+        void givenEmailNotificationReceiverWithActiveFlightWatcherWithFlightResult_whenSendMailToSubscribers_thenReturnMessage() throws MessagingException, UnsupportedEncodingException {
+            //given
+            var flightResult = flightResultCreator.createSample(false);
+            var flightWatcher = flightResult.getFlightWatcher();
+            List<FlightWatcher> flightWatcherList = new ArrayList<>();
+            flightWatcherList.add(flightWatcher);
+            emailNotificationReceiverCreator.createSample(flightWatcherList);
+            //when
+            systemUnderTest.sendMailToSubscribers();
+            var messages = greenMail.getReceivedMessages();
+            var messageResult = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
+            //then
+            Assertions.assertEquals(1, Arrays.stream(messages).toList().size());
             Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            Assertions.assertEquals(expected("/first-email-result.txt"), firstMessageResult);
-            Assertions.assertEquals(expected("/second-email-result.txt"), secondMessageResult);
+            Assertions.assertEquals(textConverter.resourceLoader("/email-result.txt"), messageResult);
+        }
+
+        @Test
+        void givenEmailNotificationReceiverWithNotActiveFlightWatcher_whenSendMailToSubscribers_thenReturnEmptyEmailList() throws MessagingException {
+            //given
+            flightWatcherCreator.createSample(true);
+            //when
+            systemUnderTest.sendMailToSubscribers();
+            var messages = greenMail.getReceivedMessages();
+            //then
+            Assertions.assertEquals(0, Arrays.stream(messages).toList().size());
+        }
+
+        @Test
+        void givenEmailNotificationReceiverWithActiveFlightWatcherWithoutFlightResult_whenSendMailToSubscribers_thenReturnEmptyEmailList() throws MessagingException {
+            //given
+            var flightWatcher = flightWatcherCreator.createSample(false);
+            List<FlightWatcher> flightWatcherList = new ArrayList<>();
+            flightWatcherList.add(flightWatcher);
+            emailNotificationReceiverCreator.createSample(flightWatcherList);
+            //when
+            systemUnderTest.sendMailToSubscribers();
+            var messages = greenMail.getReceivedMessages();
+            //then
+            Assertions.assertEquals(0, Arrays.stream(messages).toList().size());
+        }
+
+        @Test
+        void givenEmailNotificationReceiverWithTwoFlightWatchersOneActiveOneNotWithFlightResult_whenSendMailToSubscribers_thenReturnMessage() throws MessagingException, UnsupportedEncodingException {
+            //given
+            var flightResult = flightResultCreator.createSample(false);
+            var flightWatcher1 = flightResult.getFlightWatcher();
+            var flightWatcher2 = flightWatcherCreator.createSample(true);
+            List<FlightWatcher> flightWatcherList = new ArrayList<>();
+            flightWatcherList.add(flightWatcher1);
+            flightWatcherList.add(flightWatcher2);
+            emailNotificationReceiverCreator.createSample(flightWatcherList);
+            //when
+            systemUnderTest.sendMailToSubscribers();
+            var messages = greenMail.getReceivedMessages();
+            var messageResult = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
+            //then
+            Assertions.assertEquals(1, Arrays.stream(messages).toList().size());
+            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
+            Assertions.assertEquals(textConverter.resourceLoader("/email-result.txt"), messageResult);
+        }
+
+        @Test
+        void givenEmailNotificationReceiverWithTwoFlightWatchersOneActiveOneNotWithoutFlightResult_whenSendMailToSubscribers_thenReturnEmptyEmailSizeList() throws MessagingException {
+            //given
+            var flightWatcher1 = flightWatcherCreator.createSample(true);
+            var flightWatcher2 = flightWatcherCreator.createSample(false);
+            List<FlightWatcher> flightWatcherList = new ArrayList<>();
+            flightWatcherList.add(flightWatcher1);
+            flightWatcherList.add(flightWatcher2);
+            emailNotificationReceiverCreator.createSample(flightWatcherList);
+            //when
+            systemUnderTest.sendMailToSubscribers();
+            var messages = greenMail.getReceivedMessages();
+            //then
+            Assertions.assertEquals(0, Arrays.stream(messages).toList().size());
         }
     }
 
-    private String expected(String path) {
-        ResourceLoader resourceLoader = new DefaultResourceLoader();
-        Resource resource = resourceLoader.getResource(path);
-        return resourceToString(resource);
-    }
-
-    private String resourceToString(Resource resource) {
-        try (Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8)) {
-            return FileCopyUtils.copyToString(reader);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    private String convertEmail(String email) {
-        return email.replaceAll("(?s)(^-)(.*)(?=<!DOCTYPE html>)", "").replaceAll("(?=</html>)(?s)(.*)", "").strip();
+    private String convertEmailMessage(String email) {
+        var convertEmailMessage = email.replaceAll("(?s)(^-)(.*)(?=<!DOCTYPE html>)", "").replaceAll("(?<=</html>)(?s).*", "").strip();
+        return convertEmailMessage.replaceAll("\\r\\n?", "\n");
     }
 }
