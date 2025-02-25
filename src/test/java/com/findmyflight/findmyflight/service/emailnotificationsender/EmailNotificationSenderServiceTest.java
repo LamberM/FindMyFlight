@@ -136,7 +136,72 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
             //then
             Assertions.assertEquals(1, Arrays.stream(messages).toList().size());
             Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            Assertions.assertEquals(loadResource("/email-result-with-two-flightResults"), messageResult);
+            Assertions.assertEquals(loadResource("/email-result-with-two-flightResults.txt"), messageResult);
         }
+
+        @Test
+        void givenTwoEmailNotificationReceiverWithTwoActiveFlightWatchersWithFlightResult_whenSendMailToSubscribers_thenReturnTwoMailsWithTwoEmailResults() throws MessagingException {
+            //given
+            var emailNotificationReceiver1 = emailNotificationReceiverCreator.createSample();
+            var emailNotificationReceiver2 = emailNotificationReceiverCreator.createSample();
+            flightResultCreator.createSample(false, emailNotificationReceiver1);
+            flightResultCreator.createSample(false, emailNotificationReceiver2);
+            //when
+            systemUnderTest.sendMailToSubscribers();
+            var messages = greenMail.getReceivedMessages();
+            var message1 = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
+            var message2 = convertEmailMessage(GreenMailUtil.getBody((messages[1])));
+            //then
+            Assertions.assertEquals(2, Arrays.stream(messages).toList().size());
+            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
+            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
+            Assertions.assertEquals(loadResource("/email-result.txt"), message1);
+            Assertions.assertEquals(loadResource("/email-result.txt"), message2);
+        }
+
+        @Test
+        void givenTwoEmailNotificationReceiverWithTwoOrOneFlightWatchersAndTwoOrOneFlightResult_whenSendMailToSubscribers_thenReturnTwoMailsOneEmailResultWithTwoFlightResultAndEmailResult() throws MessagingException {
+            //given
+            var emailNotificationReceiver1 = emailNotificationReceiverCreator.createSample();
+            var emailNotificationReceiver2 = emailNotificationReceiverCreator.createSample();
+            flightResultCreator.createSample(false, emailNotificationReceiver1);
+            flightResultCreator.createSample(false, emailNotificationReceiver2);
+            flightResultCreator.createSample(false, emailNotificationReceiver2);
+            //when
+            systemUnderTest.sendMailToSubscribers();
+            var messages = greenMail.getReceivedMessages();
+            var message1 = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
+            var message2 = convertEmailMessage(GreenMailUtil.getBody((messages[1])));
+            //then
+            Assertions.assertEquals(2, Arrays.stream(messages).toList().size());
+            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
+            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
+            Assertions.assertEquals(loadResource("/email-result.txt"), message1);
+            Assertions.assertEquals(loadResource("/email-result-with-two-flightResults.txt"), message2);
+        }
+
+        //2 ENR 1FW 1 FR, 1 ENR 1 FW
+        @Test
+        void givenThreeEmailNotificationReceiversWithOneFlightWatcherWithOneOrNoneFlightResult_whenSendMailToSubscribers_ThenReturnTwoMailsWithTwoEmailResult() throws MessagingException {
+            //given
+            var emailNotificationReceiver1 = emailNotificationReceiverCreator.createSample();
+            var emailNotificationReceiver2 = emailNotificationReceiverCreator.createSample();
+            var emailNotificationReceiver3 = emailNotificationReceiverCreator.createSample();
+            flightWatcherCreator.createSample(false, LocalDate.now(), emailNotificationReceiver1);
+            flightResultCreator.createSample(false, emailNotificationReceiver2);
+            flightResultCreator.createSample(false, emailNotificationReceiver3);
+            //when
+            systemUnderTest.sendMailToSubscribers();
+            var messages = greenMail.getReceivedMessages();
+            var message1 = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
+            var message2 = convertEmailMessage(GreenMailUtil.getBody((messages[1])));
+            //then
+            Assertions.assertEquals(2, Arrays.stream(messages).toList().size());
+            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
+            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
+            Assertions.assertEquals(loadResource("/email-result.txt"), message1);
+            Assertions.assertEquals(loadResource("/email-result.txt"), message2);
+        }
+
     }
 }
