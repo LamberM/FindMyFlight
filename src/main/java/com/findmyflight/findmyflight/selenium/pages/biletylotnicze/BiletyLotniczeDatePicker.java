@@ -13,6 +13,7 @@ public class BiletyLotniczeDatePicker extends BasePage {
 
     private static final String AVAILABLE_DAYS_SELECTOR = ".SBCSS-calendar > tbody > tr > td.SBCSS-active";
     public static final String MONTH_ATTRIBUTE = "qa-month";
+
     private final WebElement dateField;
     private WebElement rightArrow;
 
