@@ -53,6 +53,7 @@ tasks.named('test') {
         filter {
             includeTestsMatching "*Test"
             excludeTestsMatching "*IT"
+            setFailOnNoMatchingTests(false)
         }
     }
 }
