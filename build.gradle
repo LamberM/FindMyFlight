@@ -47,5 +47,22 @@ dependencies {
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        filter {
+            includeTestsMatching "*Test"
+            excludeTestsMatching "*IT"
+        }
+    }
+}
+
+def integrationTest = tasks.register("integrationTest", Test) {
+    useJUnitPlatform {
+        filter {
+            includeTestsMatching '*IT'
+        }
+    }
+}
+
+tasks.named('integrationTest') {
+    dependsOn integrationTest
 }
