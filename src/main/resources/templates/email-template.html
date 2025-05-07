@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<h3>Hello,</h3>
+<h4>Thanks for subscribe SkyDealHunter.
+    <br>Your observed flights:
+</h4>
+<table>
+    <thead>
+    <tr>
+        <th>FROM</th>
+        <th>TO</th>
+        <th>FROM</th>
+        <th>TO</th>
+        <th>Suspended</th>
+        <th>COST</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="flightWatcher : ${flightWatchers}">
+        <td th:text="${flightWatcher.fromCity}"></td>
+        <td th:text="${flightWatcher.toCity}"></td>
+        <td th:text="${flightWatcher.fromDate}"></td>
+        <td th:text="${flightWatcher.toDate}"></td>
+        <td th:text="${flightWatcher.suspended}"></td>
+        <td th:text="${flightWatcher.flightResult.result}"></td>
+    </tr>
+    </tbody>
+</table>
+<h4>We wish you safety, comfortable and cheapest flight to your dream places.
+</h4>
+<h4>
+    Greetings,
+    <br>SkyDealHunter
+</h4>
+</body>
+</html>
