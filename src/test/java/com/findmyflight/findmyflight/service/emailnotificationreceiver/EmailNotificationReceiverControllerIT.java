@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
-class EmailNotificationReceiverControllerTest extends IntegrationTest {
+class EmailNotificationReceiverControllerIT extends IntegrationTest {
 
     @AfterEach
     void cleanUp() {

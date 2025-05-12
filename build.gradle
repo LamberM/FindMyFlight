@@ -36,7 +36,9 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
-    testImplementation 'com.icegreen:greenmail-junit5:2.1.2'
+    testImplementation('com.icegreen:greenmail-junit5:2.1.2') {
+        exclude group: "junit", module: "junit"
+    }
     testImplementation group: 'com.jayway.jsonpath', name: 'json-path', version: '2.9.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -44,8 +46,28 @@ dependencies {
     testImplementation 'com.h2database:h2'
     testCompileOnly 'org.projectlombok:lombok:1.18.32'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+    testImplementation 'org.mockito:mockito-subclass:5.11.0'
+}
+
+configurations {
+    runtime.exclude group: "org.slf4j", module: "slf4j-log4j12"
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        filter {
+            includeTestsMatching "*Test"
+            excludeTestsMatching "*IT"
+            setFailOnNoMatchingTests(false)
+        }
+    }
+}
+
+def integrationTest = tasks.register("integrationTest", Test) {
+    useJUnitPlatform {
+        filter {
+            includeTestsMatching '*IT'
+        }
+    }
 }

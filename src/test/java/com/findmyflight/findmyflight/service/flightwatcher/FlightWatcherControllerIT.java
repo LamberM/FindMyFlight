@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
-class FlightWatcherControllerTest extends IntegrationTest {
+class FlightWatcherControllerIT extends IntegrationTest {
 
     @Autowired
     private FlightWatcherMapper flightWatcherMapper;
