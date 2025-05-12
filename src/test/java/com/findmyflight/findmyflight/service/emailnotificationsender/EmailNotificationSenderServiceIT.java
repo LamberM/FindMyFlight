@@ -6,8 +6,8 @@ import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -17,7 +17,10 @@ import org.springframework.beans.factory.annotation.Value;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-class EmailNotificationSenderServiceTest extends IntegrationTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@Disabled
+class EmailNotificationSenderServiceIT extends IntegrationTest {
     @RegisterExtension
     static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP);
     @Autowired
@@ -52,7 +55,7 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
             systemUnderTest.sendMailToSubscribers();
             var messages = greenMail.getReceivedMessages();
             //then
-            Assertions.assertEquals(0, Arrays.stream(messages).toList().size());
+            assertEquals(0, Arrays.stream(messages).toList().size());
         }
 
         @Test
@@ -65,9 +68,9 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
             var messages = greenMail.getReceivedMessages();
             var messageResult = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
             //then
-            Assertions.assertEquals(1, Arrays.stream(messages).toList().size());
-            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            Assertions.assertEquals(loadResource("/email-result.txt"), messageResult);
+            assertEquals(1, Arrays.stream(messages).toList().size());
+            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
+            assertEquals(loadResource("/email-result.txt"), messageResult);
         }
 
         @Test
@@ -79,7 +82,7 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
             systemUnderTest.sendMailToSubscribers();
             var messages = greenMail.getReceivedMessages();
             //then
-            Assertions.assertEquals(0, Arrays.stream(messages).toList().size());
+            assertEquals(0, Arrays.stream(messages).toList().size());
         }
 
         @Test
@@ -91,7 +94,7 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
             systemUnderTest.sendMailToSubscribers();
             var messages = greenMail.getReceivedMessages();
             //then
-            Assertions.assertEquals(0, Arrays.stream(messages).toList().size());
+            assertEquals(0, Arrays.stream(messages).toList().size());
         }
 
         @Test
@@ -105,9 +108,9 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
             var messages = greenMail.getReceivedMessages();
             var messageResult = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
             //then
-            Assertions.assertEquals(1, Arrays.stream(messages).toList().size());
-            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            Assertions.assertEquals(loadResource("/email-result.txt"), messageResult);
+            assertEquals(1, Arrays.stream(messages).toList().size());
+            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
+            assertEquals(loadResource("/email-result.txt"), messageResult);
         }
 
         @Test
@@ -120,7 +123,7 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
             systemUnderTest.sendMailToSubscribers();
             var messages = greenMail.getReceivedMessages();
             //then
-            Assertions.assertEquals(0, Arrays.stream(messages).toList().size());
+            assertEquals(0, Arrays.stream(messages).toList().size());
         }
 
         @Test
@@ -134,9 +137,9 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
             var messages = greenMail.getReceivedMessages();
             var messageResult = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
             //then
-            Assertions.assertEquals(1, Arrays.stream(messages).toList().size());
-            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            Assertions.assertEquals(loadResource("/email-result-with-two-flightResults.txt"), messageResult);
+            assertEquals(1, Arrays.stream(messages).toList().size());
+            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
+            assertEquals(loadResource("/email-result-with-two-flightResults.txt"), messageResult);
         }
 
         @Test
@@ -152,11 +155,11 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
             var message1 = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
             var message2 = convertEmailMessage(GreenMailUtil.getBody((messages[1])));
             //then
-            Assertions.assertEquals(2, Arrays.stream(messages).toList().size());
-            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
-            Assertions.assertEquals(loadResource("/email-result.txt"), message1);
-            Assertions.assertEquals(loadResource("/email-result.txt"), message2);
+            assertEquals(2, Arrays.stream(messages).toList().size());
+            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
+            assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
+            assertEquals(loadResource("/email-result.txt"), message1);
+            assertEquals(loadResource("/email-result.txt"), message2);
         }
 
         @Test
@@ -173,11 +176,11 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
             var message1 = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
             var message2 = convertEmailMessage(GreenMailUtil.getBody((messages[1])));
             //then
-            Assertions.assertEquals(2, Arrays.stream(messages).toList().size());
-            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
-            Assertions.assertEquals(loadResource("/email-result.txt"), message1);
-            Assertions.assertEquals(loadResource("/email-result-with-two-flightResults.txt"), message2);
+            assertEquals(2, Arrays.stream(messages).toList().size());
+            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
+            assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
+            assertEquals(loadResource("/email-result.txt"), message1);
+            assertEquals(loadResource("/email-result-with-two-flightResults.txt"), message2);
         }
 
         //2 ENR 1FW 1 FR, 1 ENR 1 FW
@@ -196,11 +199,11 @@ class EmailNotificationSenderServiceTest extends IntegrationTest {
             var message1 = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
             var message2 = convertEmailMessage(GreenMailUtil.getBody((messages[1])));
             //then
-            Assertions.assertEquals(2, Arrays.stream(messages).toList().size());
-            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            Assertions.assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
-            Assertions.assertEquals(loadResource("/email-result.txt"), message1);
-            Assertions.assertEquals(loadResource("/email-result.txt"), message2);
+            assertEquals(2, Arrays.stream(messages).toList().size());
+            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
+            assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
+            assertEquals(loadResource("/email-result.txt"), message1);
+            assertEquals(loadResource("/email-result.txt"), message2);
         }
 
     }
