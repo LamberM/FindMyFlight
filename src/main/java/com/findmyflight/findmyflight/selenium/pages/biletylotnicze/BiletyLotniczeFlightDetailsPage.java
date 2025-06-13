@@ -32,20 +32,7 @@ public class BiletyLotniczeFlightDetailsPage extends BasePage {
     }
 
     private LocalTime getLocalTime() {
-        var stringBuilder = new StringBuilder(flightHour.getText());
-        var hour = 0;
-        var minute = 0;
-        if (hourIsDigit(stringBuilder)) {
-            hour = Integer.parseInt(stringBuilder.substring(1, 2));
-        } else {
-            hour = Integer.parseInt(stringBuilder.substring(0, 2));
-        }
-        if (minuteIsDigit(stringBuilder)) {
-            minute = Integer.parseInt(stringBuilder.substring(4, 5));
-        } else {
-            minute = Integer.parseInt(stringBuilder.substring(3, 5));
-        }
-        return LocalTime.of(hour, minute);
+        return LocalTime.parse(flightHour.getText());
     }
 
     private LocalDate getLocalDate() {
@@ -90,14 +77,6 @@ public class BiletyLotniczeFlightDetailsPage extends BasePage {
         } else {
             return LocalDate.now().getYear() + 1;
         }
-    }
-
-    private static boolean hourIsDigit(StringBuilder stringBuilder) {
-        return stringBuilder.charAt(0) == 0;
-    }
-
-    private static boolean minuteIsDigit(StringBuilder stringBuilder) {
-        return stringBuilder.charAt(3) == 0;
     }
 
     private static boolean dayIsDigit(StringBuilder stringBuilder) {

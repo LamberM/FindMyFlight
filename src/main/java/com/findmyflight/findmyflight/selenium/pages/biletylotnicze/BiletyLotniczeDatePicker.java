@@ -12,50 +12,61 @@ import java.util.List;
 public class BiletyLotniczeDatePicker extends BasePage {
 
     private static final String AVAILABLE_DAYS_SELECTOR = ".SBCSS-calendar > tbody > tr > td.SBCSS-active";
-    public static final String MONTH_ATTRIBUTE = "qa-month";
-
+    public static final String MONTH_ATTRIBUTE_NAME = "qa-month";
+    public static final String YEAR_ATTRIBUTE_NAME = "qa-year";
+    private final String monthFieldSelector;
+    private final String rightArrowFieldSelector;
     private final WebElement dateField;
-    private WebElement rightArrow;
 
-    public BiletyLotniczeDatePicker(WebDriver webDriver, WebElement dateField) {
+    public BiletyLotniczeDatePicker(WebDriver webDriver, WebElement dateField, String monthFieldSelector, String rightArrowFieldSelector) {
         super(webDriver);
+        this.monthFieldSelector = monthFieldSelector;
+        this.rightArrowFieldSelector = rightArrowFieldSelector;
         this.dateField = dateField;
     }
 
-    public void pickDate(LocalDate dateToPick, String monthSelector, String rightArrowSelector) {
+    public void pickDate(LocalDate dateToPick) {
         dateField.click();
-        waitUntilPresent(By.cssSelector(monthSelector));
-        var monthValue = webDriver.findElement(By.cssSelector(monthSelector));
-        findDate(Integer.parseInt(monthValue.getAttribute(MONTH_ATTRIBUTE)), dateToPick, rightArrowSelector);
+        waitUntilPresent(By.cssSelector(monthFieldSelector));
+        WebElement currentDateElement = webDriver.findElement(By.cssSelector(monthFieldSelector));
+        findDate(Integer.parseInt(currentDateElement.getAttribute(MONTH_ATTRIBUTE_NAME)), Integer.parseInt(currentDateElement.getAttribute(YEAR_ATTRIBUTE_NAME)), dateToPick, rightArrowFieldSelector);
     }
 
-    private void findDate(int monthValue, LocalDate dateToPick, String rightArrowSelector) {
-        var monthToPick = convertDateTo(dateToPick);
+    private void findDate(int currentMonthIndex, int currentYearIndex, LocalDate dateToPick, String rightArrowSelector) {
+        var monthToPick = dateToPick.getMonthValue() - 1;
         var dayToPick = dateToPick.getDayOfMonth();
-        if (monthToPick - monthValue < 0) {
-            var nextYearPick = 12 + monthToPick - monthValue;
-            for (int i = 0; i < nextYearPick; i++) {
-                waitUntil(driver -> driver.findElement(By.cssSelector(rightArrowSelector)).isDisplayed(), Duration.ofSeconds(2));
-                rightArrow = webDriver.findElement(By.cssSelector(rightArrowSelector));
-                rightArrow.click();
-            }
+        var yearToPick = dateToPick.getYear();
+        int monthDiff;
+        if (isCurrentYear(currentYearIndex, yearToPick)) {
+            monthDiff = 12 + monthToPick - currentMonthIndex;
+            pickMonth(monthDiff, rightArrowSelector);
         } else {
-            for (int i = 0; i < monthToPick - monthValue; i++) {
-                waitUntil(driver -> driver.findElement(By.cssSelector(rightArrowSelector)).isDisplayed(), Duration.ofSeconds(2));
-                rightArrow = webDriver.findElement(By.cssSelector(rightArrowSelector));
-                rightArrow.click();
-            }
+            monthDiff = monthToPick - currentMonthIndex;
+            pickMonth(monthDiff, rightArrowSelector);
         }
         List<WebElement> calendarDayElements = webDriver.findElements(By.cssSelector(AVAILABLE_DAYS_SELECTOR));
         for (WebElement element : calendarDayElements) {
-            if (!element.getText().isEmpty() && Integer.parseInt(element.getText()) == dayToPick) {
+            if (isCurrentDay(element, dayToPick)) {
                 element.click();
                 waitUntilDisappear(element);
             }
         }
     }
 
-    private int convertDateTo(LocalDate dateToPick) {
-        return dateToPick.getMonthValue() - 1;
+    private void pickMonth(int monthDiff, String rightArrowSelector) {
+        WebElement rightArrowField;
+        for (int i = 0; i < monthDiff; i++) {
+            waitUntil(driver -> driver.findElement(By.cssSelector(rightArrowSelector)).isDisplayed(), Duration.ofSeconds(20));
+            rightArrowField = webDriver.findElement(By.cssSelector(rightArrowSelector));
+            rightArrowField.click();
+        }
+    }
+
+    private boolean isCurrentYear(int currentYearIndex, int yearToPick) {
+        return currentYearIndex < yearToPick;
+    }
+
+    private boolean isCurrentDay(WebElement element, int dayToPick) {
+        return !element.getText().isEmpty() && Integer.parseInt(element.getText()) == dayToPick;
     }
 }

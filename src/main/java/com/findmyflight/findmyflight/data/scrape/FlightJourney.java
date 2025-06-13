@@ -3,5 +3,5 @@ package com.findmyflight.findmyflight.data.scrape;
 import lombok.Builder;
 
 @Builder
-public record FlightJourney(SingleFlight outwardFlight, SingleFlight returnFlight) {
+public record FlightJourney(SingleFlight outwardFlight, SingleFlight returnFlight, String cost) {
 }
