@@ -12,9 +12,9 @@ public class BiletyLotniczeFlightSearchSingleResultPage extends BasePage {
         super(webDriver);
     }
 
-    public SingleFlight readFlight(String startTimeXpath, String endTimeXpath, String startAirportXpath, String endAirportXpath, String startDayXpath, String endDayXpath) {
-        var flightStartDetails = new BiletyLotniczeFlightDetailsPage(webDriver, startTimeXpath, startAirportXpath, startDayXpath);
-        var flightEndDetails = new BiletyLotniczeFlightDetailsPage(webDriver, endTimeXpath, endAirportXpath, endDayXpath);
+    public SingleFlight readFlight(String startTimeXPath, String endTimeXPath, String startAirportXPath, String endAirportXPath, String startDayXPath, String endDayXPath, String inputDateXPath) {
+        var flightStartDetails = new BiletyLotniczeFlightDetailsPage(webDriver, startTimeXPath, startAirportXPath, startDayXPath, inputDateXPath);
+        var flightEndDetails = new BiletyLotniczeFlightDetailsPage(webDriver, endTimeXPath, endAirportXPath, endDayXPath, inputDateXPath);
         return SingleFlight.builder()
                 .referenceUrl(webDriver.getCurrentUrl())
                 .journey(List.of(

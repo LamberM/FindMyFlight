@@ -16,12 +16,11 @@ public class BiletyLotniczeFlightSearchResultsPage extends BasePage {
     private static final int RETURN_INDEX = 2;
     private static final int START_INDEX = 1;
     private static final int END_INDEX = 3;
-    private static final String TIME_FIELD_XPATH = "//flights-list/div/div[2]/div/div/ul/li[1]/esky-offer-group-container/div/div[1]/div/div[1]/div/esky-offer[%d]/div/div[1]/div[%d]/div[1]/span[1]";
-    private static final String AIRPORT_FIELD_XPATH = "//flights-list/div/div[2]/div/div/ul/li[1]/esky-offer-group-container/div/div[1]/div/div[1]/div/esky-offer[%d]/div/div[1]/div[%d]/div[1]/span[2]";
-    private static final String DAY_FIELD_XPATH = "//flights-list/div/div[2]/div/div/ul/li[1]/esky-offer-group-container/div/div[1]/div/div[1]/div/esky-offer[%d]/div/div[1]/div[%d]/div[2]/span";
-    private static final String COST_FIELD_XPATH = "//flights-list/div/div[2]/div/div/ul/li[1]/esky-offer-group-container/div/div[1]/div/div[2]/esky-offer-price-info-container/div/div[1]/div/esky-offer-price-info/div/esky-price";
-
-
+    private static final String TIME_FIELD_XPATH = "//so-fsr-leg-group[%d]//div[%d]//time[1]//span[1]";
+    private static final String AIRPORT_FIELD_XPATH = "//so-fsr-leg-group[%d]//div[%d]//time[1]//span[2]";
+    private static final String DAY_FIELD_XPATH = "//so-fsr-leg-group[%d]//div[%d]//time[2]/span";
+    private static final String INPUT_DATE_XPATH = "//esky-oneway-roundtrip-form//section[2]//fieldset[2]//div[%d]//input";
+    private static final String COST_FIELD_XPATH = "//so-fsr-flight-block[1]//div[1]//div[1]//workspace-price-formatter";
     private final BiletyLotniczeFlightSearchSingleResultPage outwardFlight;
     private final BiletyLotniczeFlightSearchSingleResultPage returnFlight;
     private WebElement costField;
@@ -34,14 +33,15 @@ public class BiletyLotniczeFlightSearchResultsPage extends BasePage {
 
     public FlightJourney readJourney() {
         waitUntilNotPresent(By.cssSelector(SEARCHING_BAR_ELEMENT_SELECTOR), SEARCHING_BAR_WAIT_TIMEOUT);
+        waitUntilPresent(By.xpath(COST_FIELD_XPATH));
         costField = webDriver.findElement(By.xpath(COST_FIELD_XPATH));
         return FlightJourney.builder()
                 .outwardFlight(outwardFlight.readFlight(getTimeXPath(OUTWARD_INDEX, START_INDEX), getTimeXPath(OUTWARD_INDEX, END_INDEX),
                         getAirportTimeXPath(OUTWARD_INDEX, START_INDEX), getAirportTimeXPath(OUTWARD_INDEX, END_INDEX),
-                        getDayXPath(OUTWARD_INDEX, START_INDEX), getDayXPath(OUTWARD_INDEX, END_INDEX)))
+                        getDayXPath(OUTWARD_INDEX, START_INDEX), getDayXPath(OUTWARD_INDEX, END_INDEX), getInputDateXPath(OUTWARD_INDEX)))
                 .returnFlight(returnFlight.readFlight(getTimeXPath(RETURN_INDEX, START_INDEX), getTimeXPath(RETURN_INDEX, END_INDEX),
                         getAirportTimeXPath(RETURN_INDEX, START_INDEX), getAirportTimeXPath(RETURN_INDEX, END_INDEX),
-                        getDayXPath(RETURN_INDEX, START_INDEX), getDayXPath(RETURN_INDEX, END_INDEX)))
+                        getDayXPath(RETURN_INDEX, START_INDEX), getDayXPath(RETURN_INDEX, END_INDEX), getInputDateXPath(RETURN_INDEX)))
                 .cost(costField.getText())
                 .build();
     }
@@ -56,5 +56,9 @@ public class BiletyLotniczeFlightSearchResultsPage extends BasePage {
 
     private String getDayXPath(int typeFlight, int typeTime) {
         return String.format(DAY_FIELD_XPATH, typeFlight, typeTime);
+    }
+
+    private String getInputDateXPath(int typeFlight) {
+        return String.format(INPUT_DATE_XPATH, typeFlight);
     }
 }
