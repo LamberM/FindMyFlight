@@ -14,6 +14,7 @@ public class BiletyLotniczeDatePicker extends BasePage {
     private static final String AVAILABLE_DAYS_SELECTOR = ".SBCSS-calendar > tbody > tr > td.SBCSS-active";
     public static final String MONTH_ATTRIBUTE_NAME = "qa-month";
     public static final String YEAR_ATTRIBUTE_NAME = "qa-year";
+    public static final int MONTH_IN_YEAR = 12;
     private final String monthFieldSelector;
     private final String rightArrowFieldSelector;
     private final WebElement dateField;
@@ -29,20 +30,20 @@ public class BiletyLotniczeDatePicker extends BasePage {
         dateField.click();
         waitUntilPresent(By.cssSelector(monthFieldSelector));
         WebElement currentDateElement = webDriver.findElement(By.cssSelector(monthFieldSelector));
-        findDate(Integer.parseInt(currentDateElement.getAttribute(MONTH_ATTRIBUTE_NAME)), Integer.parseInt(currentDateElement.getAttribute(YEAR_ATTRIBUTE_NAME)), dateToPick, rightArrowFieldSelector);
+        findDate(Integer.parseInt(currentDateElement.getAttribute(MONTH_ATTRIBUTE_NAME)), Integer.parseInt(currentDateElement.getAttribute(YEAR_ATTRIBUTE_NAME)), dateToPick);
     }
 
-    private void findDate(int currentMonthIndex, int currentYearIndex, LocalDate dateToPick, String rightArrowSelector) {
+    private void findDate(int currentMonthIndex, int currentYearAttributeValue, LocalDate dateToPick) {
         var monthToPick = dateToPick.getMonthValue() - 1;
         var dayToPick = dateToPick.getDayOfMonth();
         var yearToPick = dateToPick.getYear();
         int monthDiff;
-        if (isCurrentYear(currentYearIndex, yearToPick)) {
-            monthDiff = 12 + monthToPick - currentMonthIndex;
-            pickMonth(monthDiff, rightArrowSelector);
+        if (isProperYear(currentYearAttributeValue, yearToPick)) {
+            monthDiff = MONTH_IN_YEAR + monthToPick - currentMonthIndex;
+            pickMonth(monthDiff, rightArrowFieldSelector);
         } else {
             monthDiff = monthToPick - currentMonthIndex;
-            pickMonth(monthDiff, rightArrowSelector);
+            pickMonth(monthDiff, rightArrowFieldSelector);
         }
         List<WebElement> calendarDayElements = webDriver.findElements(By.cssSelector(AVAILABLE_DAYS_SELECTOR));
         for (WebElement element : calendarDayElements) {
@@ -62,8 +63,8 @@ public class BiletyLotniczeDatePicker extends BasePage {
         }
     }
 
-    private boolean isCurrentYear(int currentYearIndex, int yearToPick) {
-        return currentYearIndex < yearToPick;
+    private boolean isProperYear(int currentYearAttributeValue, int yearToPick) {
+        return yearToPick > currentYearAttributeValue;
     }
 
     private boolean isCurrentDay(WebElement element, int dayToPick) {

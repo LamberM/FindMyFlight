@@ -9,17 +9,22 @@ import org.openqa.selenium.WebElement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class BiletyLotniczeFlightDetailsPage extends BasePage {
     private final WebElement flightHour;
     private final WebElement flightAirport;
     private final WebElement flightDate;
+    private final WebElement flightInputDate;
 
-    public BiletyLotniczeFlightDetailsPage(WebDriver webDriver, String timeXPath, String airportXPath, String dayXPath) {
+    private static final String INPUT_DATE_ATTRIBUTE_NAME = "data-qa-value";
+
+    public BiletyLotniczeFlightDetailsPage(WebDriver webDriver, String timeXPath, String airportXPath, String dayXPath, String inputDateXPath) {
         super(webDriver);
         flightHour = webDriver.findElement(By.xpath(timeXPath));
         flightAirport = webDriver.findElement(By.xpath(airportXPath));
         flightDate = webDriver.findElement(By.xpath(dayXPath));
+        flightInputDate = webDriver.findElement(By.xpath(inputDateXPath));
     }
 
     public JourneyPoint parseToJourneyPoint() {
@@ -36,50 +41,36 @@ public class BiletyLotniczeFlightDetailsPage extends BasePage {
     }
 
     private LocalDate getLocalDate() {
-        var stringBuilder = new StringBuilder(flightDate.getText());
-        var year = 0;
-        var month = 0;
-        var day = 0;
-        if (dayIsDigit(stringBuilder)) {
-            day = Integer.parseInt(stringBuilder.substring(0, 1));
-            month = getMonth(stringBuilder.substring(2, 5));
-            year = getYear(month);
-            return LocalDate.of(year, month, day);
-        } else {
-            day = Integer.parseInt(stringBuilder.substring(0, 2));
-            month = getMonth(stringBuilder.substring(3, 6));
-            year = getYear(month);
-            return LocalDate.of(year, month, day);
-        }
+        var dateString = flightDate.getText();
+        String[] parts = dateString.split(" ");
+        var day = parts[0];
+        var polishMonth = parts[1];
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
+        var temporalAccessor = formatter.parse(getYear() + "-" + getMonthInNumber(polishMonth) + "-" + day);
+        return LocalDate.from(temporalAccessor);
     }
 
-    private int getMonth(String month) {
+    private String getMonthInNumber(String month) {
         return switch (month) {
-            case "sty" -> 1;
-            case "lut" -> 2;
-            case "mar" -> 3;
-            case "kwi" -> 4;
-            case "maj" -> 5;
-            case "cze" -> 6;
-            case "lip" -> 7;
-            case "sie" -> 8;
-            case "wrz" -> 9;
-            case "paź" -> 10;
-            case "lis" -> 11;
-            case "gru" -> 12;
-            default -> 0;
+            case "sty" -> "01";
+            case "lut" -> "02";
+            case "mar" -> "03";
+            case "kwi" -> "04";
+            case "maj" -> "05";
+            case "cze" -> "06";
+            case "lip" -> "07";
+            case "sie" -> "08";
+            case "wrz" -> "09";
+            case "paź" -> "10";
+            case "lis" -> "11";
+            case "gru" -> "12";
+            default -> "error";
         };
     }
 
-    private int getYear(int month) {
-        if (month >= LocalDate.now().getMonthValue()) {
-            return LocalDate.now().getYear();
-        } else {
-            return LocalDate.now().getYear() + 1;
-        }
-    }
-
-    private static boolean dayIsDigit(StringBuilder stringBuilder) {
-        return stringBuilder.charAt(1) == ' ';
+    private String getYear() {
+        var inputDateString = flightInputDate.getAttribute(INPUT_DATE_ATTRIBUTE_NAME);
+        var inputDate = LocalDate.parse(inputDateString);
+        return String.valueOf(inputDate.getYear());
     }
 }
