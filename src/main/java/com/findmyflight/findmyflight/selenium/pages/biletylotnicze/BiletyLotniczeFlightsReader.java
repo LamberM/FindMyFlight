@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +22,8 @@ public class BiletyLotniczeFlightsReader implements FlightsReader {
     private final WebDriverFactory webDriverFactory;
 
     @Override
-    public Map<FlightWatcherResponse, Collection<FlightJourney>> read(Collection<FlightWatcherResponse> flightWatchers) {
+    public Map<FlightWatcherResponse, Collection<FlightJourney>> read(
+            Collection<FlightWatcherResponse> flightWatchers) {
         var driver = webDriverFactory.get();
         var searchPage = new BiletyLotniczeFlightSearchPage(driver);
 
@@ -31,8 +31,8 @@ public class BiletyLotniczeFlightsReader implements FlightsReader {
             var result = new HashMap<FlightWatcherResponse, Collection<FlightJourney>>();
             for (FlightWatcherResponse flightWatcherResponse : flightWatchers) {
                 driver.get(BASE_URL);
-                var flightJourney = searchPage.searchFlights(flightWatcherResponse).readJourney();
-                result.put(flightWatcherResponse, Set.of(flightJourney));
+                var flightJourneys = searchPage.searchFlights(flightWatcherResponse).readJourneys();
+                result.put(flightWatcherResponse, flightJourneys);
             }
             return result;
         } finally {
