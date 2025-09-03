@@ -10,6 +10,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 @Disabled
 class BiletyLotniczeFlightSearchPageTest implements UnitTest {
@@ -25,17 +26,16 @@ class BiletyLotniczeFlightSearchPageTest implements UnitTest {
         FlightWatcherResponse flightWatcher = FlightWatcherResponse.builder()
                 .fromCity("Warszawa")
                 .toCity("Berlin")
-                .fromDate(LocalDate.now())
-                .toDate(LocalDate.now().plusDays(7))
+                .fromDate(LocalDate.now().plusDays(7))
+                .toDate(LocalDate.now().plusDays(14))
                 .build();
 
         driver.manage().window().maximize();
         driver.get(BiletyLotniczeFlightsReader.BASE_URL);
 
-        FlightJourney flightJourney = new BiletyLotniczeFlightSearchPage(driver)
+        Collection<FlightJourney> flightJourneys = new BiletyLotniczeFlightSearchPage(driver)
                 .searchFlights(flightWatcher)
-                .readJourney();
-
-        Assertions.assertNotNull(flightJourney);
+                .readJourneys();
+        Assertions.assertNotNull(flightJourneys);
     }
 }
