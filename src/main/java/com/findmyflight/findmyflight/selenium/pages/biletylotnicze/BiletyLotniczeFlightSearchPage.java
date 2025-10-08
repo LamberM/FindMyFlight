@@ -9,6 +9,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
+import java.util.Optional;
+
 @Slf4j
 public class BiletyLotniczeFlightSearchPage extends BasePage {
 
@@ -50,7 +52,7 @@ public class BiletyLotniczeFlightSearchPage extends BasePage {
 
     private void pickCity(WebElement cityInputElement, String city) {
         cityInputElement.sendKeys(city);
-        waitUntilPresent(By.cssSelector(CITY_TO_PICK_TABLE_ELEMENT_SELECTOR));
+        waitUntilPresent(By.cssSelector(CITY_TO_PICK_TABLE_ELEMENT_SELECTOR), Optional.empty());
 
         WebElement targetCityTableElement = webDriver.findElement(
                 By.cssSelector(CITY_TO_PICK_SELECTOR_PATTERN.formatted(city)));

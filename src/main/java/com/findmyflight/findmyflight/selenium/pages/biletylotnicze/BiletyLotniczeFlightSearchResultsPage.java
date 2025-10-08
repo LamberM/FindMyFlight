@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class BiletyLotniczeFlightSearchResultsPage extends BasePage {
@@ -42,7 +43,8 @@ public class BiletyLotniczeFlightSearchResultsPage extends BasePage {
 
     public Collection<FlightJourney> readJourneys(Integer maxFlightFilter, BigDecimal maxPriceFilter) {
         waitUntilNotPresent(By.cssSelector(SEARCHING_BAR_ELEMENT_SELECTOR), SEARCHING_BAR_WAIT_TIMEOUT);
-        waitUntilPresent(By.cssSelector(MAX_FLIGHT_FROM_SITE_ELEMENT_SELECTOR), MAX_FLIGHT_FROM_SITE_WAIT_TIMEOUT);
+        waitUntilPresent(By.cssSelector(MAX_FLIGHT_FROM_SITE_ELEMENT_SELECTOR),
+                Optional.ofNullable(MAX_FLIGHT_FROM_SITE_WAIT_TIMEOUT));
         Set<FlightJourney> flightJourneys = new HashSet<>();
         var i = 1;
         var maxFlight = maxFlightFilter != null && maxFlightFilter != 0 ? maxFlightFilter : DEFAULT_MAX_FLIGHT_COUNT;
@@ -52,7 +54,7 @@ public class BiletyLotniczeFlightSearchResultsPage extends BasePage {
                 var showMoreButton = webDriver.findElement(By.cssSelector(SHOW_MORE_BUTTON_SELECTOR));
                 showMoreButton.click();
             }
-            waitUntilPresent(By.xpath(getCostFieldXpath(i)), Duration.ofSeconds(10));
+            waitUntilPresent(By.xpath(getCostFieldXpath(i)), Optional.ofNullable(Duration.ofSeconds(10)));
             new Actions(webDriver)
                     .scrollToElement(webDriver.findElement(By.xpath(getCostFieldXpath(i))))
                     .perform();
