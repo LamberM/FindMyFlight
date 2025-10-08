@@ -31,7 +31,8 @@ public class BiletyLotniczeFlightsReader implements FlightsReader {
             var result = new HashMap<FlightWatcherResponse, Collection<FlightJourney>>();
             for (FlightWatcherResponse flightWatcherResponse : flightWatchers) {
                 driver.get(BASE_URL);
-                var flightJourneys = searchPage.searchFlights(flightWatcherResponse).readJourneys();
+                var flightJourneys = searchPage.searchFlights(flightWatcherResponse)
+                        .readJourneys(flightWatcherResponse.maxFlightCount(), flightWatcherResponse.maxPrice());
                 result.put(flightWatcherResponse, flightJourneys);
             }
             return result;
