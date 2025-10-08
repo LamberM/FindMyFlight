@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Slf4j
@@ -19,8 +20,9 @@ public abstract class BasePage {
 
     protected final WebDriver webDriver;
 
-    protected void waitUntilPresent(By locator) {
-        Wait<WebDriver> wait = new WebDriverWait(webDriver, DEFAULT_WAIT_DURATION);
+    protected void waitUntilPresent(By locator, Optional<Duration> duration) {
+        var pickDuration = duration.orElse(DEFAULT_WAIT_DURATION);
+        Wait<WebDriver> wait = new WebDriverWait(webDriver, pickDuration);
         wait.until(d -> !d.findElements(locator).isEmpty());
     }
 

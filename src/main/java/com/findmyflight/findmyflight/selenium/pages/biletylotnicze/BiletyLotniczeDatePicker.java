@@ -8,6 +8,7 @@ import org.openqa.selenium.WebElement;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class BiletyLotniczeDatePicker extends BasePage {
 
@@ -19,7 +20,8 @@ public class BiletyLotniczeDatePicker extends BasePage {
     private final String rightArrowFieldSelector;
     private final WebElement dateField;
 
-    public BiletyLotniczeDatePicker(WebDriver webDriver, WebElement dateField, String monthFieldSelector, String rightArrowFieldSelector) {
+    public BiletyLotniczeDatePicker(WebDriver webDriver, WebElement dateField, String monthFieldSelector,
+                                    String rightArrowFieldSelector) {
         super(webDriver);
         this.monthFieldSelector = monthFieldSelector;
         this.rightArrowFieldSelector = rightArrowFieldSelector;
@@ -28,9 +30,10 @@ public class BiletyLotniczeDatePicker extends BasePage {
 
     public void pickDate(LocalDate dateToPick) {
         dateField.click();
-        waitUntilPresent(By.cssSelector(monthFieldSelector));
+        waitUntilPresent(By.cssSelector(monthFieldSelector), Optional.empty());
         WebElement currentDateElement = webDriver.findElement(By.cssSelector(monthFieldSelector));
-        findDate(Integer.parseInt(currentDateElement.getAttribute(MONTH_ATTRIBUTE_NAME)), Integer.parseInt(currentDateElement.getAttribute(YEAR_ATTRIBUTE_NAME)), dateToPick);
+        findDate(Integer.parseInt(currentDateElement.getAttribute(MONTH_ATTRIBUTE_NAME)),
+                Integer.parseInt(currentDateElement.getAttribute(YEAR_ATTRIBUTE_NAME)), dateToPick);
     }
 
     private void findDate(int currentMonthIndex, int currentYearAttributeValue, LocalDate dateToPick) {
@@ -57,7 +60,8 @@ public class BiletyLotniczeDatePicker extends BasePage {
     private void pickMonth(int monthDiff, String rightArrowSelector) {
         WebElement rightArrowField;
         for (int i = 0; i < monthDiff; i++) {
-            waitUntil(driver -> driver.findElement(By.cssSelector(rightArrowSelector)).isDisplayed(), Duration.ofSeconds(20));
+            waitUntil(driver -> driver.findElement(By.cssSelector(rightArrowSelector)).isDisplayed(),
+                    Duration.ofSeconds(20));
             rightArrowField = webDriver.findElement(By.cssSelector(rightArrowSelector));
             rightArrowField.click();
         }
