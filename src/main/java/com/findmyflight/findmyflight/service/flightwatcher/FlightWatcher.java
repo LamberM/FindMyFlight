@@ -11,6 +11,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -45,6 +48,13 @@ public class FlightWatcher {
 
     @NotNull
     private Boolean suspended;
+
+    @NotNull
+    @Min(1)
+    private Integer maxFlightCount;
+
+    @DecimalMin(value = "1", message = "maxPrice should be more than 0")
+    private BigDecimal maxPrice;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private EmailNotificationReceiver emailNotificationReceiver;
