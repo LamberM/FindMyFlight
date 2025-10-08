@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -70,7 +71,8 @@ class FlightWatcherControllerIT extends IntegrationTest {
                     .jsonPath("$.toCity").isEqualTo(sample.getToCity())
                     .jsonPath("$.fromDate").isEqualTo(sample.getFromDate().format(DateTimeFormatter.ISO_DATE))
                     .jsonPath("$.toDate").isEqualTo(sample.getToDate().format(DateTimeFormatter.ISO_DATE))
-                    .jsonPath("$.suspended").isEqualTo(sample.getSuspended());
+                    .jsonPath("$.suspended").isEqualTo(sample.getSuspended())
+                    .jsonPath("$.maxPrice").isEqualTo(sample.getMaxPrice());
         }
     }
 
@@ -86,6 +88,8 @@ class FlightWatcherControllerIT extends IntegrationTest {
                     .fromDate(LocalDate.now())
                     .toDate(LocalDate.now().plusDays(1))
                     .suspended(Boolean.FALSE)
+                    .maxPrice(new BigDecimal("2000.00"))
+                    .maxFlightCount(10)
                     .emailNotificationReceiverId(sampleReceiver.getId())
                     .build();
             //when
@@ -110,7 +114,9 @@ class FlightWatcherControllerIT extends IntegrationTest {
                         .returns(request.toCity(), FlightWatcher::getToCity)
                         .returns(request.fromDate(), FlightWatcher::getFromDate)
                         .returns(request.toDate(), FlightWatcher::getToDate)
-                        .returns(request.suspended(), FlightWatcher::getSuspended);
+                        .returns(request.suspended(), FlightWatcher::getSuspended)
+                        .returns(request.maxFlightCount(), FlightWatcher::getMaxFlightCount)
+                        .returns(request.maxPrice(), FlightWatcher::getMaxPrice);
                 Assertions.assertThat(flightWatcher)
                         .extracting(FlightWatcher::getEmailNotificationReceiver)
                         .extracting(EmailNotificationReceiver::getId)
@@ -131,6 +137,8 @@ class FlightWatcherControllerIT extends IntegrationTest {
                     .fromDate(sample.getFromDate())
                     .toDate(sample.getToDate().plusDays(1))
                     .suspended(sample.getSuspended())
+                    .maxPrice(new BigDecimal("2000.00"))
+                    .maxFlightCount(10)
                     .emailNotificationReceiverId(sample.getEmailNotificationReceiver().getId())
                     .build();
             //when
@@ -150,7 +158,8 @@ class FlightWatcherControllerIT extends IntegrationTest {
                         .returns(request.toCity(), FlightWatcher::getToCity)
                         .returns(request.fromDate(), FlightWatcher::getFromDate)
                         .returns(request.toDate(), FlightWatcher::getToDate)
-                        .returns(request.suspended(), FlightWatcher::getSuspended);
+                        .returns(request.suspended(), FlightWatcher::getSuspended)
+                        .returns(request.maxPrice(), FlightWatcher::getMaxPrice);
             });
         }
     }

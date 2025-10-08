@@ -40,8 +40,10 @@ public class BiletyLotniczeFlightSearchPage extends BasePage {
         waitUntilDisplayed(fromCityField, toCityField, fromDateField, toDateField, submitButton);
         pickCity(fromCityField, flightWatcher.fromCity());
         pickCity(toCityField, flightWatcher.toCity());
-        new BiletyLotniczeDatePicker(webDriver, fromDateField, FROM_MONTH_FIELD_SELECTOR, FROM_RIGHT_ARROW_FIELD_SELECTOR).pickDate(flightWatcher.fromDate());
-        new BiletyLotniczeDatePicker(webDriver, toDateField, TO_MONTH_FIELD_SELECTOR, TO_RIGHT_ARROW_FIELD_SELECTOR).pickDate(flightWatcher.toDate());
+        new BiletyLotniczeDatePicker(webDriver, fromDateField, FROM_MONTH_FIELD_SELECTOR,
+                FROM_RIGHT_ARROW_FIELD_SELECTOR).pickDate(flightWatcher.fromDate());
+        new BiletyLotniczeDatePicker(webDriver, toDateField, TO_MONTH_FIELD_SELECTOR,
+                TO_RIGHT_ARROW_FIELD_SELECTOR).pickDate(flightWatcher.toDate());
         submitButton.click();
         return new BiletyLotniczeFlightSearchResultsPage(webDriver);
     }
@@ -50,7 +52,8 @@ public class BiletyLotniczeFlightSearchPage extends BasePage {
         cityInputElement.sendKeys(city);
         waitUntilPresent(By.cssSelector(CITY_TO_PICK_TABLE_ELEMENT_SELECTOR));
 
-        WebElement targetCityTableElement = webDriver.findElement(By.cssSelector(CITY_TO_PICK_SELECTOR_PATTERN.formatted(city)));
+        WebElement targetCityTableElement = webDriver.findElement(
+                By.cssSelector(CITY_TO_PICK_SELECTOR_PATTERN.formatted(city)));
         waitUntilDisplayed(targetCityTableElement);
 
         targetCityTableElement.click();

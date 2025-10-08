@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Component
@@ -23,19 +24,24 @@ public class FlightWatcherCreator {
                 .fromDate(LocalDate.now())
                 .toDate(LocalDate.now().plusDays(1))
                 .suspended(suspended)
+                .maxPrice(new BigDecimal("2000.00"))
+                .maxFlightCount(10)
                 .emailNotificationReceiver(emailNotificationReceiverCreator.createSample())
                 .build();
         return flightWatcherRepository.save(flightWatcher);
     }
 
     @Transactional
-    public FlightWatcher createSample(boolean suspended, LocalDate from, EmailNotificationReceiver emailNotificationReceiver) {
+    public FlightWatcher createSample(boolean suspended, LocalDate from,
+                                      EmailNotificationReceiver emailNotificationReceiver) {
         var flightWatcher = FlightWatcher.builder()
                 .fromCity("gdansk")
                 .toCity("rome")
                 .fromDate(from)
                 .toDate(from.plusDays(1))
                 .suspended(suspended)
+                .maxPrice(new BigDecimal("2000.00"))
+                .maxFlightCount(10)
                 .emailNotificationReceiver(emailNotificationReceiver)
                 .build();
         return flightWatcherRepository.save(flightWatcher);

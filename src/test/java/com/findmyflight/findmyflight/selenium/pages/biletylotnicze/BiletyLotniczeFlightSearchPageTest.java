@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 
@@ -28,6 +29,8 @@ class BiletyLotniczeFlightSearchPageTest implements UnitTest {
                 .toCity("Berlin")
                 .fromDate(LocalDate.now().plusDays(7))
                 .toDate(LocalDate.now().plusDays(14))
+                .maxPrice(new BigDecimal("2000"))
+                .maxFlightCount(10)
                 .build();
 
         driver.manage().window().maximize();
@@ -35,7 +38,7 @@ class BiletyLotniczeFlightSearchPageTest implements UnitTest {
 
         Collection<FlightJourney> flightJourneys = new BiletyLotniczeFlightSearchPage(driver)
                 .searchFlights(flightWatcher)
-                .readJourneys();
+                .readJourneys(flightWatcher.maxFlightCount(), flightWatcher.maxPrice());
         Assertions.assertNotNull(flightJourneys);
     }
 }
