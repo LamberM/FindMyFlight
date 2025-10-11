@@ -29,6 +29,7 @@ dependencies {
     implementation group: 'org.hibernate', name: 'hibernate-validator', version: '8.0.1.Final'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.4.0'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '3.4.1'
+    implementation 'com.h2database:h2'
 
     implementation 'org.seleniumhq.selenium:selenium-java:4.27.0'
 
