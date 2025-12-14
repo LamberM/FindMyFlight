@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  java:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=db,gmail,thymeleaf
+    container_name: find-my-flight-app
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    restart: unless-stopped
+  db:
+    image: 'postgres:18.1-alpine'
+    container_name: find-my-flight-db
+    environment:
+       POSTGRES_DB: find-my-flight-db
+       POSTGRES_USER: sa
+       POSTGRES_PASSWORD: sa
+    ports:
+      - "15432:5432"
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
