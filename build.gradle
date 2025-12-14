@@ -26,11 +26,10 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation group: 'org.hibernate', name: 'hibernate-validator', version: '8.0.1.Final'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.4.0'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '3.4.1'
-    implementation 'com.h2database:h2'
-
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-mail:3.4.0'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.4.1'
+    implementation 'org.postgresql:postgresql:42.7.8'
     implementation 'org.seleniumhq.selenium:selenium-java:4.27.0'
 
     compileOnly 'org.projectlombok:lombok:1.18.32'
@@ -42,11 +41,13 @@ dependencies {
     testImplementation('com.icegreen:greenmail-junit5:2.1.2') {
         exclude group: "junit", module: "junit"
     }
-    testImplementation group: 'com.jayway.jsonpath', name: 'json-path', version: '2.9.0'
+    testImplementation 'com.jayway.jsonpath:json-path:2.9.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webflux'
-    testImplementation 'com.h2database:h2'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:testcontainers:2.0.2'
+    testImplementation 'org.testcontainers:postgresql:1.21.3'
     testCompileOnly 'org.projectlombok:lombok:1.18.32'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
 
