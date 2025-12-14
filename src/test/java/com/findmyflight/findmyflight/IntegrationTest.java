@@ -4,6 +4,7 @@ import com.findmyflight.findmyflight.config.TestcontainersConfig;
 import com.findmyflight.findmyflight.samplecreator.EmailNotificationReceiverCreator;
 import com.findmyflight.findmyflight.samplecreator.FlightResultCreator;
 import com.findmyflight.findmyflight.samplecreator.FlightWatcherCreator;
+import com.findmyflight.findmyflight.samplecreator.UserCreator;
 import com.findmyflight.findmyflight.utils.TransactionHelper;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,8 @@ public abstract class IntegrationTest {
     protected EmailNotificationReceiverCreator emailNotificationReceiverCreator;
     @Autowired
     protected FlightResultCreator flightResultCreator;
+    @Autowired
+    protected UserCreator userCreator;
 
     public String loadResource(String path) {
         var resourceLoader = new DefaultResourceLoader();
