@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-flight-result-table
+      author: Marcin Lamberski
+      comment: Create table for flight results
+      changes:
+        - createTable:
+            tableName: flight_result
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: result
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: flight_watcher_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: flight_result
+            baseColumnNames: flight_watcher_id
+            referencedTableName: flight_watcher
+            referencedColumnNames: id
+            constraintName: fk_flight_watcher_flight_result
+        - createIndex:
+            tableName: flight_result
+            indexName: idx_flight_result_flight_watcher_id
+            columns:
+              - column:
+                  name: flight_watcher_id
+      rollback:
+        - dropTable:
+            tableName: flight_result

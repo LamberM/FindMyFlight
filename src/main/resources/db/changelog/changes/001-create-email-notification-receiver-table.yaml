@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-email-notification-receiver-table
+      author: Marcin Lamberski
+      comment: Create table for email notifications receivers
+      changes:
+        - createTable:
+            tableName: email_notification_receiver
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: address
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+      rollback:
+        - dropTable:
+            tableName: email_notification_receiver

@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-flight-watcher-table
+      author: Marcin Lamberski
+      comment: Create table for flight watchers
+      changes:
+        - createTable:
+            tableName: flight_watcher
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: from_city
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: to_city
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: from_date
+                  type: date
+              - column:
+                  name: to_date
+                  type: date
+              - column:
+                  name: suspended
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_flight_count
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_price
+                  type: decimal(19,2)
+              - column:
+                  name: email_notification_receiver_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: flight_watcher
+            baseColumnNames: email_notification_receiver_id
+            referencedTableName: email_notification_receiver
+            referencedColumnNames: id
+            constraintName: fk_flight_watcher_email_notification_receiver
+        - createIndex:
+            tableName: flight_watcher
+            indexName: idx_flight_watcher_email_notification_receiver_id
+            columns:
+              - column:
+                  name: email_notification_receiver_id
+      rollback:
+        - dropTable:
+            tableName: flight_watcher
