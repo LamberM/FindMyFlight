@@ -7,7 +7,7 @@ RUN gradle build
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=gradle-builder /app/build/libs/find-my-flight.jar find-my-flight.jar
+COPY --from=gradle-builder /app/build/libs/findmyflight-0.0.1-SNAPSHOT.jar find-my-flight.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "find-my-flight.jar"]
