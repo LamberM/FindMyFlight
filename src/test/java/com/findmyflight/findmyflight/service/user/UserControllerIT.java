@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Collection;
@@ -17,17 +18,20 @@ class UserControllerIT extends IntegrationTest {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @AfterEach
     void cleanUp() {
         userCreator.deleteAll();
     }
 
     @Nested
-    class CreateTest {
+    class CreateIT {
         @Test
         void givenValidRequest_thenCreate() {
             //given
-            var request = CreateOrUpdateUserRequest.builder()
+            var request = CreateUserRequest.builder()
                     .login("test@gmail.com")
                     .fullName("John Doe")
                     .password("4testPassword!")
@@ -52,14 +56,14 @@ class UserControllerIT extends IntegrationTest {
                         .isNotNull()
                         .returns(request.login(), User::getLogin)
                         .returns(request.fullName(), User::getFullName);
-                Assertions.assertThat(request.password()).isNotSameAs(user.getPassword());
+                Assertions.assertThat(passwordEncoder.matches(request.password(),user.getPassword())).isTrue();
             });
         }
 
         @Test
         void givenInvalidPasswordRequest_thenBadRequest() {
             //given
-            var request = CreateOrUpdateUserRequest.builder()
+            var request = CreateUserRequest.builder()
                     .login("test1@gmail.com")
                     .password("testPassword!")
                     .fullName("John Doe")
@@ -78,7 +82,7 @@ class UserControllerIT extends IntegrationTest {
         @Test
         void givenInvalidLoginRequest_thenBadRequest() {
             //given
-            var request = CreateOrUpdateUserRequest.builder()
+            var request = CreateUserRequest.builder()
                     .login("test2")
                     .password("3testPassword!")
                     .fullName("John Doe")
@@ -96,7 +100,7 @@ class UserControllerIT extends IntegrationTest {
     }
 
     @Nested
-    class FindAllTest {
+    class FindAllIT{
         @Test
         void givenUsers_thenReturnAll() {
             //given
@@ -124,7 +128,7 @@ class UserControllerIT extends IntegrationTest {
     }
 
     @Nested
-    class FindByIdTest {
+    class FindByIdIT {
         @Test
         void givenUser_thenReturnById() {
             //given
@@ -147,15 +151,13 @@ class UserControllerIT extends IntegrationTest {
     }
 
     @Nested
-    class UpdateTest {
+    class UpdateIT {
         @Test
         void givenSampleAndRequest_thenUpdate() {
             //given
             var sample = userCreator.createSample("John Doe");
-            var request = CreateOrUpdateUserRequest.builder()
-                    .login("test@gmail.com")
-                    .fullName("John Doe")
-                    .password("4444testPassword!")
+            var request = UpdateUserRequest.builder()
+                    .fullName("Johnny Doe")
                     .build();
             //when
             //then
@@ -172,15 +174,13 @@ class UserControllerIT extends IntegrationTest {
                 var user = entityManager.find(User.class, sample.getId());
                 Assertions.assertThat(user)
                         .isNotNull()
-                        .returns(request.login(), User::getLogin)
                         .returns(request.fullName(), User::getFullName);
-                Assertions.assertThat(request.password()).isNotSameAs(user.getPassword());
             });
         }
     }
 
     @Nested
-    class DeleteTest {
+    class DeleteIT{
         @Test
         void givenUser_thenDelete() {
             //given

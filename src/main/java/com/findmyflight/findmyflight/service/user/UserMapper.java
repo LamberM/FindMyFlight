@@ -10,12 +10,12 @@ import java.util.Collection;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
-    User map(CreateOrUpdateUserRequest createOrUpdateUserRequest);
+    User map(CreateUserRequest createUserRequest);
 
     UserResponse map(User User);
 
     Collection<UserResponse> map(Collection<User> UserCollection);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateFromRequest(CreateOrUpdateUserRequest createOrUpdateUserRequest, @MappingTarget User User);
+    void updateFromRequest(UpdateUserRequest updateUserRequest, @MappingTarget User User);
 }

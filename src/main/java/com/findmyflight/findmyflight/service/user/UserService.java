@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public UserResponse create(CreateOrUpdateUserRequest userRequest) {
+    public UserResponse create(CreateUserRequest userRequest) {
         var user = userMapper.map(userRequest);
         user.setPassword(passwordEncoder.encode(userRequest.password()));
         userRepository.save(user);
@@ -34,7 +35,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse update(Long id, CreateOrUpdateUserRequest userRequest) {
+    public UserResponse update(Long id, UpdateUserRequest userRequest) {
         var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         userMapper.updateFromRequest(userRequest, user);
         userRepository.save(user);
@@ -44,5 +45,17 @@ public class UserService {
     @Transactional
     public void delete(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> findByLogin(String login) {
+        return userRepository.findByLogin(login);
+    }
+
+    @Transactional
+    public void updatePassword(Long id, String rawPassword) {
+        var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        userRepository.save(user);
     }
 }
