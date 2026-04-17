@@ -6,8 +6,8 @@ import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -19,7 +19,6 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Disabled
 class EmailNotificationSenderServiceIT extends IntegrationTest {
     @RegisterExtension
     static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP);
@@ -29,6 +28,12 @@ class EmailNotificationSenderServiceIT extends IntegrationTest {
     private String username;
     @Value("${spring.mail.password}")
     private String password;
+    @Value("${app.password-reset.url}")
+    private String passwordResetUrl;
+    private static final String SEND_MAIL_TO_SUBSCRIBERS_SUBJECT = "Your observed flights in SkyDealHunter";
+    private static final String SEND_MAIL_TO_SUBSCRIBERS_EMAIL_RESULT_PATH = "/send-mail-to-subscribers-email-result.txt";
+    private static final String SEND_MAIL_TO_SUBSCRIBERS_EMAIL_RESULT_WITH_TWO_FLIGHT_RESULTS_PATH = "/send-mail-to-subscribers-email-result-with-two-flightResults.txt";
+
 
     @BeforeEach
     public void setUp() {
@@ -40,16 +45,14 @@ class EmailNotificationSenderServiceIT extends IntegrationTest {
         flightResultCreator.deleteAll();
         flightWatcherCreator.deleteAll();
         emailNotificationReceiverCreator.deleteAll();
-    }
-
-    private String convertEmailMessage(String email) {
-        return email.replaceAll("(?s)(^-)(.*)(?=<!DOCTYPE html>)", "").replaceAll("(?<=</html>)(?s).*", "").strip();
+        userCreator.deleteAll();
+        passwordResetTokenCreator.deleteAll();
     }
 
     @Nested
-    class SendMailToSubscribersTest {
+    class SendMailToSubscribersIT {
         @Test
-        void givenNothing_whenSendMailToSubscribers_thenReturnEmptyEmailList() throws MessagingException {
+        void givenNothing_whenSendMailToSubscribers_thenReturnEmptyEmailList() {
             //given
             //when
             systemUnderTest.sendMailToSubscribers();
@@ -59,22 +62,23 @@ class EmailNotificationSenderServiceIT extends IntegrationTest {
         }
 
         @Test
-        void givenEmailNotificationReceiverWithActiveFlightWatcherWithFlightResult_whenSendMailToSubscribers_thenReturnMessage() throws MessagingException {
+        void givenEmailNotificationReceiverWithActiveFlightWatcherWithFlightResult_whenSendMailToSubscribers_thenReturnMessage() throws
+                MessagingException {
             //given
             var emailNotificationReceiver = emailNotificationReceiverCreator.createSample();
             flightResultCreator.createSample(false, emailNotificationReceiver);
             //when
             systemUnderTest.sendMailToSubscribers();
             var messages = greenMail.getReceivedMessages();
-            var messageResult = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
+            var messageResult = textConverter.convertEmailMessage(GreenMailUtil.getBody((messages[0])));
             //then
             assertEquals(1, Arrays.stream(messages).toList().size());
-            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            assertEquals(loadResource("/email-result.txt"), messageResult);
+            assertEquals(SEND_MAIL_TO_SUBSCRIBERS_SUBJECT, messages[0].getSubject());
+            assertEquals(textConverter.loadResource(SEND_MAIL_TO_SUBSCRIBERS_EMAIL_RESULT_PATH), messageResult);
         }
 
         @Test
-        void givenEmailNotificationReceiverWithNotActiveFlightWatcher_whenSendMailToSubscribers_thenReturnEmptyEmailList() throws MessagingException {
+        void givenEmailNotificationReceiverWithNotActiveFlightWatcher_whenSendMailToSubscribers_thenReturnEmptyEmailList() {
             //given
             var emailNotificationReceiver = emailNotificationReceiverCreator.createSample();
             flightWatcherCreator.createSample(true, LocalDate.now(), emailNotificationReceiver);
@@ -86,7 +90,7 @@ class EmailNotificationSenderServiceIT extends IntegrationTest {
         }
 
         @Test
-        void givenEmailNotificationReceiverWithActiveFlightWatcherWithoutFlightResult_whenSendMailToSubscribers_thenReturnEmptyEmailList() throws MessagingException {
+        void givenEmailNotificationReceiverWithActiveFlightWatcherWithoutFlightResult_whenSendMailToSubscribers_thenReturnEmptyEmailList() {
             //given
             var emailNotificationReceiver = emailNotificationReceiverCreator.createSample();
             flightWatcherCreator.createSample(false, LocalDate.now(), emailNotificationReceiver);
@@ -98,7 +102,8 @@ class EmailNotificationSenderServiceIT extends IntegrationTest {
         }
 
         @Test
-        void givenEmailNotificationReceiverWithTwoFlightWatchersOneActiveOneNotWithFlightResult_whenSendMailToSubscribers_thenReturnMessage() throws MessagingException {
+        void givenEmailNotificationReceiverWithTwoFlightWatchersOneActiveOneNotWithFlightResult_whenSendMailToSubscribers_thenReturnMessage() throws
+                MessagingException {
             //given
             var emailNotificationReceiver = emailNotificationReceiverCreator.createSample();
             flightResultCreator.createSample(false, emailNotificationReceiver);
@@ -106,15 +111,15 @@ class EmailNotificationSenderServiceIT extends IntegrationTest {
             //when
             systemUnderTest.sendMailToSubscribers();
             var messages = greenMail.getReceivedMessages();
-            var messageResult = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
+            var messageResult = textConverter.convertEmailMessage(GreenMailUtil.getBody((messages[0])));
             //then
             assertEquals(1, Arrays.stream(messages).toList().size());
-            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            assertEquals(loadResource("/email-result.txt"), messageResult);
+            assertEquals(SEND_MAIL_TO_SUBSCRIBERS_SUBJECT, messages[0].getSubject());
+            assertEquals(textConverter.loadResource(SEND_MAIL_TO_SUBSCRIBERS_EMAIL_RESULT_PATH), messageResult);
         }
 
         @Test
-        void givenEmailNotificationReceiverWithTwoFlightWatchersOneActiveOneNotWithoutFlightResult_whenSendMailToSubscribers_thenReturnEmptyEmailSizeList() throws MessagingException {
+        void givenEmailNotificationReceiverWithTwoFlightWatchersOneActiveOneNotWithoutFlightResult_whenSendMailToSubscribers_thenReturnEmptyEmailSizeList() {
             //given
             var emailNotificationReceiver = emailNotificationReceiverCreator.createSample();
             flightWatcherCreator.createSample(true, LocalDate.now(), emailNotificationReceiver);
@@ -127,7 +132,8 @@ class EmailNotificationSenderServiceIT extends IntegrationTest {
         }
 
         @Test
-        void givenEmailNotificationReceiverWithTwoActiveFlightWatchersSameEmailNotificationReceiverWithFlightResult_whenSendMailToSubscribers_thenReturnOneMail() throws MessagingException {
+        void givenEmailNotificationReceiverWithTwoActiveFlightWatchersSameEmailNotificationReceiverWithFlightResult_whenSendMailToSubscribers_thenReturnOneMail() throws
+                MessagingException {
             //given
             var emailNotificationReceiver = emailNotificationReceiverCreator.createSample();
             flightResultCreator.createSample(false, emailNotificationReceiver);
@@ -135,15 +141,17 @@ class EmailNotificationSenderServiceIT extends IntegrationTest {
             //when
             systemUnderTest.sendMailToSubscribers();
             var messages = greenMail.getReceivedMessages();
-            var messageResult = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
+            var messageResult = textConverter.convertEmailMessage(GreenMailUtil.getBody((messages[0])));
             //then
             assertEquals(1, Arrays.stream(messages).toList().size());
-            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            assertEquals(loadResource("/email-result-with-two-flightResults.txt"), messageResult);
+            assertEquals(SEND_MAIL_TO_SUBSCRIBERS_SUBJECT, messages[0].getSubject());
+            assertEquals(textConverter.loadResource(SEND_MAIL_TO_SUBSCRIBERS_EMAIL_RESULT_WITH_TWO_FLIGHT_RESULTS_PATH),
+                    messageResult);
         }
 
         @Test
-        void givenTwoEmailNotificationReceiverWithTwoActiveFlightWatchersWithFlightResult_whenSendMailToSubscribers_thenReturnTwoMailsWithTwoEmailResults() throws MessagingException {
+        void givenTwoEmailNotificationReceiverWithTwoActiveFlightWatchersWithFlightResult_whenSendMailToSubscribers_thenReturnTwoMailsWithTwoEmailResults() throws
+                MessagingException {
             //given
             var emailNotificationReceiver1 = emailNotificationReceiverCreator.createSample();
             var emailNotificationReceiver2 = emailNotificationReceiverCreator.createSample();
@@ -152,18 +160,21 @@ class EmailNotificationSenderServiceIT extends IntegrationTest {
             //when
             systemUnderTest.sendMailToSubscribers();
             var messages = greenMail.getReceivedMessages();
-            var message1 = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
-            var message2 = convertEmailMessage(GreenMailUtil.getBody((messages[1])));
+            var message1 = textConverter.convertEmailMessage(GreenMailUtil.getBody((messages[0])));
+            var message2 = textConverter.convertEmailMessage(GreenMailUtil.getBody((messages[1])));
             //then
+            var expectedMessage = textConverter.loadResource(SEND_MAIL_TO_SUBSCRIBERS_EMAIL_RESULT_PATH);
+
             assertEquals(2, Arrays.stream(messages).toList().size());
-            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
-            assertEquals(loadResource("/email-result.txt"), message1);
-            assertEquals(loadResource("/email-result.txt"), message2);
+            assertEquals(SEND_MAIL_TO_SUBSCRIBERS_SUBJECT, messages[0].getSubject());
+            assertEquals(SEND_MAIL_TO_SUBSCRIBERS_SUBJECT, messages[1].getSubject());
+            assertEquals(expectedMessage, message1);
+            assertEquals(expectedMessage, message2);
         }
 
         @Test
-        void givenTwoEmailNotificationReceiverWithTwoOrOneFlightWatchersAndTwoOrOneFlightResult_whenSendMailToSubscribers_thenReturnTwoMailsOneEmailResultWithTwoFlightResultAndEmailResult() throws MessagingException {
+        void givenTwoEmailNotificationReceiverWithTwoOrOneFlightWatchersAndTwoOrOneFlightResult_whenSendMailToSubscribers_thenReturnTwoMailsOneEmailResultWithTwoFlightResultAndEmailResult() throws
+                MessagingException {
             //given
             var emailNotificationReceiver1 = emailNotificationReceiverCreator.createSample();
             var emailNotificationReceiver2 = emailNotificationReceiverCreator.createSample();
@@ -173,19 +184,20 @@ class EmailNotificationSenderServiceIT extends IntegrationTest {
             //when
             systemUnderTest.sendMailToSubscribers();
             var messages = greenMail.getReceivedMessages();
-            var message1 = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
-            var message2 = convertEmailMessage(GreenMailUtil.getBody((messages[1])));
+            var message1 = textConverter.convertEmailMessage(GreenMailUtil.getBody((messages[0])));
+            var message2 = textConverter.convertEmailMessage(GreenMailUtil.getBody((messages[1])));
             //then
             assertEquals(2, Arrays.stream(messages).toList().size());
-            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
-            assertEquals(loadResource("/email-result.txt"), message1);
-            assertEquals(loadResource("/email-result-with-two-flightResults.txt"), message2);
+            assertEquals(SEND_MAIL_TO_SUBSCRIBERS_SUBJECT, messages[0].getSubject());
+            assertEquals(SEND_MAIL_TO_SUBSCRIBERS_SUBJECT, messages[1].getSubject());
+            assertEquals(textConverter.loadResource(SEND_MAIL_TO_SUBSCRIBERS_EMAIL_RESULT_PATH), message1);
+            assertEquals(textConverter.loadResource(SEND_MAIL_TO_SUBSCRIBERS_EMAIL_RESULT_WITH_TWO_FLIGHT_RESULTS_PATH),
+                    message2);
         }
 
-        //2 ENR 1FW 1 FR, 1 ENR 1 FW
         @Test
-        void givenThreeEmailNotificationReceiversWithOneFlightWatcherWithOneOrNoneFlightResult_whenSendMailToSubscribers_ThenReturnTwoMailsWithTwoEmailResult() throws MessagingException {
+        void givenThreeEmailNotificationReceiversWithOneFlightWatcherWithOneOrNoneFlightResult_whenSendMailToSubscribers_ThenReturnTwoMailsWithTwoEmailResult() throws
+                MessagingException {
             //given
             var emailNotificationReceiver1 = emailNotificationReceiverCreator.createSample();
             var emailNotificationReceiver2 = emailNotificationReceiverCreator.createSample();
@@ -196,15 +208,35 @@ class EmailNotificationSenderServiceIT extends IntegrationTest {
             //when
             systemUnderTest.sendMailToSubscribers();
             var messages = greenMail.getReceivedMessages();
-            var message1 = convertEmailMessage(GreenMailUtil.getBody((messages[0])));
-            var message2 = convertEmailMessage(GreenMailUtil.getBody((messages[1])));
+            var message1 = textConverter.convertEmailMessage(GreenMailUtil.getBody((messages[0])));
+            var message2 = textConverter.convertEmailMessage(GreenMailUtil.getBody((messages[1])));
             //then
+            var expectedMessage = textConverter.loadResource(SEND_MAIL_TO_SUBSCRIBERS_EMAIL_RESULT_PATH);
+
             assertEquals(2, Arrays.stream(messages).toList().size());
-            assertEquals("Your observed flights in SkyDealHunter", messages[0].getSubject());
-            assertEquals("Your observed flights in SkyDealHunter", messages[1].getSubject());
-            assertEquals(loadResource("/email-result.txt"), message1);
-            assertEquals(loadResource("/email-result.txt"), message2);
+            assertEquals(SEND_MAIL_TO_SUBSCRIBERS_SUBJECT, messages[0].getSubject());
+            assertEquals(SEND_MAIL_TO_SUBSCRIBERS_SUBJECT, messages[1].getSubject());
+            assertEquals(expectedMessage, message1);
+            assertEquals(expectedMessage, message2);
         }
 
+    }
+
+    @Nested
+    class SendForgotPasswordMailIT {
+        @Test
+        void givenUserAndCorrectLogin_whenForgetPassword_thenGetOk() {
+            //given
+            var givenUser = userCreator.createSample("John Doe");
+            var email = givenUser.getLogin();
+            var link = passwordResetUrl + "?token=testToken";
+            //when
+            systemUnderTest.sendForgotPasswordMail(email, link);
+            //then
+            var receivedMessages = greenMail.getReceivedMessages();
+            Assertions.assertEquals(1, receivedMessages.length);
+            var message = textConverter.convertEmailMessage(GreenMailUtil.getBody((receivedMessages[0])));
+            Assertions.assertEquals(textConverter.loadResource("/forget-password-email-result.txt"), message);
+        }
     }
 }

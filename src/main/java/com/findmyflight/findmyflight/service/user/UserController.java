@@ -34,14 +34,14 @@ public class UserController {
 
     @PostMapping()
     public ResponseEntity<UserResponse> create(
-            @Valid @RequestBody CreateOrUpdateUserRequest createOrUpdateUserRequest) {
-        return ResponseEntity.ok(userService.create(createOrUpdateUserRequest));
+            @Valid @RequestBody CreateUserRequest createUserRequest) {
+        return ResponseEntity.ok(userService.create(createUserRequest));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> update(@PathVariable("id") Long id,
-                                               @Valid @RequestBody CreateOrUpdateUserRequest createOrUpdateUserRequest) {
-        return ResponseEntity.ok(userService.update(id, createOrUpdateUserRequest));
+                                               @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        return ResponseEntity.ok(userService.update(id, updateUserRequest));
     }
 
     @DeleteMapping("/{id}")
