@@ -38,7 +38,8 @@ class BiletyLotniczeFlightSearchPageTest implements UnitTest {
 
         Collection<FlightJourney> flightJourneys = new BiletyLotniczeFlightSearchPage(driver)
                 .searchFlights(flightWatcher)
-                .readJourneys(flightWatcher.maxFlightCount(), flightWatcher.maxPrice());
+                .readJourneys(flightWatcher.maxFlightCount(), flightWatcher.maxPrice(), flightWatcher.fromDate(),
+                        flightWatcher.toDate());
         Assertions.assertNotNull(flightJourneys);
     }
 }

@@ -12,42 +12,50 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class BiletyLotniczeFlightDetailsPage extends BasePage {
-    private final WebElement flightHour;
-    private final WebElement flightAirport;
-    private final WebElement flightDate;
-    private final WebElement flightInputDate;
+    private static final String LEG_DEPARTURE_SELECTOR = "[data-testid='leg-departure']";
+    private static final String LEG_ARRIVAL_SELECTOR = "[data-testid='leg-arrival']";
+    private static final String TIME_FIELD_SELECTOR = "[data-testid='time']";
+    private static final String DATE_FIELD_SELECTOR = "[data-testid='date']";
+    private static final String AIRPORT_FIELD_SELECTOR = "[data-testid='airport-code']";
 
-    private static final String INPUT_DATE_ATTRIBUTE_NAME = "data-qa-value";
-
-    public BiletyLotniczeFlightDetailsPage(WebDriver webDriver, String timeXPath, String airportXPath, String dayXPath, String inputDateXPath) {
+    public BiletyLotniczeFlightDetailsPage(WebDriver webDriver) {
         super(webDriver);
-        flightHour = webDriver.findElement(By.xpath(timeXPath));
-        flightAirport = webDriver.findElement(By.xpath(airportXPath));
-        flightDate = webDriver.findElement(By.xpath(dayXPath));
-        flightInputDate = webDriver.findElement(By.xpath(inputDateXPath));
     }
 
-    public JourneyPoint parseToJourneyPoint() {
-        waitUntilDisplayed(flightHour, flightAirport, flightDate);
+    public JourneyPoint getJourneyPoint(WebElement legGroup, FlightLegType flightLegType, LocalDate flightDate) {
+        var departure = legGroup.findElement(By.cssSelector(LEG_DEPARTURE_SELECTOR));
+        var arrival = legGroup.findElement(By.cssSelector(LEG_ARRIVAL_SELECTOR));
+        waitUntilDisplayed(departure, arrival);
+        return switch (flightLegType) {
+            case DEPARTURE -> readJourneyPoint(departure, flightDate);
+            case ARRIVAL -> readJourneyPoint(arrival, flightDate);
+            case null, default -> JourneyPoint.builder().build();
+        };
+    }
 
+    private JourneyPoint readJourneyPoint(WebElement typeOfFlight, LocalDate flightDate) {
+        var airport = typeOfFlight.findElement(By.cssSelector(AIRPORT_FIELD_SELECTOR));
+        var date = typeOfFlight.findElement(By.cssSelector(DATE_FIELD_SELECTOR));
+        var time = typeOfFlight.findElement(By.cssSelector(TIME_FIELD_SELECTOR));
         return JourneyPoint.builder()
-                .airport(flightAirport.getText())
-                .dateTime(LocalDateTime.of(getLocalDate(), getLocalTime()))
+                .airport(airport.getText())
+                .dateTime(LocalDateTime.of(getLocalDate(date, flightDate), getLocalTime(time)))
                 .build();
     }
 
-    private LocalTime getLocalTime() {
-        return LocalTime.parse(flightHour.getText());
+    private LocalTime getLocalTime(WebElement time) {
+        return LocalTime.parse(time.getText());
     }
 
-    private LocalDate getLocalDate() {
-        var dateString = flightDate.getText();
+    private LocalDate getLocalDate(WebElement date, LocalDate flightDate) {
+        var dateString = date.getText();
         String[] parts = dateString.split(" ");
         var day = parts[0];
         var polishMonth = parts[1];
         var formatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
-        var temporalAccessor = formatter.parse(getYear() + "-" + getMonthInNumber(polishMonth) + "-" + day);
-        return LocalDate.from(temporalAccessor);
+        var parsed = LocalDate.from(
+                formatter.parse(flightDate.getYear() + "-" + getMonthInNumber(polishMonth) + "-" + day));
+        return parsed.isBefore(flightDate) ? parsed.plusYears(1) : parsed;
     }
 
     private String getMonthInNumber(String month) {
@@ -68,9 +76,4 @@ public class BiletyLotniczeFlightDetailsPage extends BasePage {
         };
     }
 
-    private String getYear() {
-        var inputDateString = flightInputDate.getAttribute(INPUT_DATE_ATTRIBUTE_NAME);
-        var inputDate = LocalDate.parse(inputDateString);
-        return String.valueOf(inputDate.getYear());
-    }
 }
