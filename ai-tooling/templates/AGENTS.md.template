@@ -1,0 +1,25 @@
+# {{REPO_NAME}} — Agent Guidelines
+
+{{REPO_NAME}} is a <brief description of the repo and tech stack>.
+
+## Shared AI Tooling (ai-tooling)
+
+Cross-cutting rules, skills, and agent guides are installed from `ai-tooling`.
+Do not edit files under `agents/`, `docs/ai/`, or `.claude/skills/` directly —
+they are managed by the install script.
+
+- **Rules:** `.claude/rules/` — symlinks auto-loaded by Claude Code on every session
+- **Skills:** `.claude/skills/` — Claude Code skills
+- **Agent guides:** `agents/`
+
+### Workflow guides
+
+- Repository operations (common) — `agents/repository-operations.md`
+
+## VCS
+
+This repo uses GitHub — see `agents/repository-operations.md`.
+
+## Repo-specific skills
+
+<!-- List skills that are unique to this repo (not from ai-tooling) -->

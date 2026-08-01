@@ -1,0 +1,32 @@
+# Node (markdownlint-cli2)
+node_modules/
+package-lock.json
+
+# Python bytecode (hook scripts)
+*.pyc
+__pycache__/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Mermaid validation renders (never commit)
+*.png
+
+# Editor/IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+
+# Runtime hook log (convention-enforcer)
+convention-violations.log
+
+# Consumer-specific local overrides (not shared repo config, see README.md)
+# .claude/convention-enforcer-config.json — read by hooks/_lib.py
+# .claude/constants/ — e.g. create-agent-spec-ticket.md
+.claude/convention-enforcer-config.json
+.claude/constants/
